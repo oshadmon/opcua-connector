@@ -1,0 +1,1 @@
+get opcua struct where url = opc.tcp://127.0.0.1:4840/freeopcua/server and output = stdout and "ns=2;n=7" and attributes = *
