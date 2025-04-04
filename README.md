@@ -68,3 +68,5 @@ ns=2;s=DeviceSet.WAGO 750-8210 PFC200 G2 4ETH XTR.Resources.Application.GlobalVa
 tionFeedbackAI_ENG                                                                                  |cv1001positionfeedbackai_eng|2025-04-04 00:55:53.398573|                |Good       |0.17754649485308305|
 << COMMENT
 ```
+
+NodeId ns=2;s=DeviceSet.WAGO 750-8210 PFC200 G2 4ETH XTR.Resources.Application.GlobalVars.ALARM_TAGS.LS1001H_AlarmSetpoint  

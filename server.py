@@ -28,39 +28,38 @@ class OPCUAServer:
         self.idx = self.server.register_namespace("http://example.org")
 
         objects = self.server.get_objects_node()
-        device_set = objects.add_object(self.idx, "DeviceSet")
-        wago_device = device_set.add_object(self.idx, "WAGO 750-8210 PFC200 G2 4ETH XTR")
-        resources = wago_device.add_object(self.idx, "Resources")
-        application = resources.add_object(self.idx, "Application")
-        global_vars = application.add_object(self.idx, "GlobalVars")
+        device_set = objects.add_object(ua.NodeId("DeviceSet", self.idx), "DeviceSet")
+        wago_device = device_set.add_object(ua.NodeId("WAGO 750-8210 PFC200 G2 4ETH XTR", self.idx),
+                                            "WAGO 750-8210 PFC200 G2 4ETH XTR")
+        resources = wago_device.add_object(ua.NodeId("Resources", self.idx), "Resources")
+        application = resources.add_object(ua.NodeId("Application", self.idx), "Application")
+        global_vars = application.add_object(ua.NodeId("GlobalVars", self.idx), "GlobalVars")
         return global_vars, wago_device
 
-    def add_variables(self, parent_obj, tag_list, path_prefix="", is_string:bool=False):
+    def add_variables(self, parent_obj, tag_list, is_string: bool = False):
         """Helper function to add variables under a parent object."""
         tag_var_dict = {}
         for tag in tag_list:
-            if is_string is True:
-                full_path = f"{path_prefix}.{tag}" if path_prefix else tag
-                var = parent_obj.add_variable(ua.NodeId(full_path, self.idx), tag, False)
-                tag_var_dict[tag] = var
+            if is_string:
+                var = parent_obj.add_variable(ua.NodeId(tag, self.idx), tag, False)
             else:
-                # Add a variable for each tag
-                var = parent_obj.add_variable(self.idx, tag, False)  # Assuming default value as False for booleans, change accordingly.
-                tag_var_dict[tag] = var
+                var = parent_obj.add_variable(self.idx, tag, False)
+            tag_var_dict[tag] = var
         return tag_var_dict
 
-    def create_tag_group_objects(self, global_vars, wago_device, is_string:bool=False):
+    def create_tag_group_objects(self, global_vars, wago_device, is_string: bool = False):
         """Create tag group objects and variables under GlobalVars."""
         tag_group_objs = {}
         tag_group_var_dicts = {}
 
         for tag_group, tags in self.tag_hierarchy.items():
-            tag_group_obj = global_vars.add_object(self.idx, tag_group)
+            tag_group_obj = global_vars.add_object(
+                ua.NodeId(tag_group, self.idx) if is_string else self.idx, tag_group
+            )
             tag_group_objs[tag_group] = tag_group_obj
-
-            # Construct the full string-based path for NodeId
-            path_prefix = f"DeviceSet.{wago_device.get_browse_name().Name}.Resources.Application.GlobalVars.{tag_group}"
-            tag_group_var_dict = self.add_variables(parent_obj=tag_group_obj, tag_list=tags, path_prefix=path_prefix, is_string=is_string)
+            tag_group_var_dict = self.add_variables(
+                parent_obj=tag_group_obj, tag_list=tags, is_string=is_string
+            )
             tag_group_var_dicts[tag_group] = tag_group_var_dict
 
         return tag_group_var_dicts
