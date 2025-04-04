@@ -1,6 +1,10 @@
+import random
+
 from opcua import Server
 from opcua import ua
 import time
+
+# get opcua values where url = opc.tcp://127.0.0.1:4840/freeopcua/server and node="ns=2;s=DeviceSet.WAGO 750-8210 PFC200 G2 4ETH XTR.Resources.Application.GlobalVars.Inputs.CV1001PositionFeedbackAI_ENG"
 
 # Initialize the OPC UA server
 server = Server()
@@ -86,10 +90,10 @@ try:
         for tag_group, tag_vars in tag_group_var_dicts.items():
             for tag, var in tag_vars.items():
                 # Check if the data type is Boolean using get_data_type()
-                if var.get_data_type() == ua.VariantType.Boolean:
-                    var.set_value(True)  # Update boolean tags to True
-                else:
-                    var.set_value(100.0)  # For numeric tags, set to 100.0
+                # if var.get_data_type() == ua.VariantType.Boolean:
+                var.set_value(random.random())  # Update boolean tags to True
+                # else:
+                #     var.set_value(100.0)  # For numeric tags, set to 100.0
 except KeyboardInterrupt:
     print("Server stopped.")
 finally:
