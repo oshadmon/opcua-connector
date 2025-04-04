@@ -13,4 +13,13 @@ get opcua values where url = opc.tcp://127.0.0.1:4840/freeopcua/server and node=
 ] and include = all>
 
 get opcua values where url = opc.tcp://127.0.0.1:4840/freeopcua/server and node="ns=2;i=10" and include = all
-get opcua values where url = opc.tcp://127.0.0.1:4840/freeopcua/server and node="ns=2;s=d2001pelubepumpmtr1stop" and include = all
+AL > get opcua values where url = opc.tcp://127.0.0.1:4840/freeopcua/server and node="ns=2;i=10" and include = all
+
+OPCUA Nodes values
+id        name                    source_timestamp           server_timestamp status_code value              
+---------|-----------------------|--------------------------|----------------|-----------|------------------|
+ns=2;i=10|d2001pelubepumpmtr1stop|2025-04-04 00:09:28.168393|                |Good       |0.1345620021160595|
+
+
+
+get opcua values where url = opc.tcp://127.0.0.1:4840/freeopcua/server and node="ns=2;s=DeviceSet.WAGO 750-8210 PFC200 G2 4ETH XTR.Resources.Application.GlobalVars.Inputs.CV1001PositionFeedbackAI_ENG" and include = all
