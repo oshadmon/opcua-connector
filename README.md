@@ -24,6 +24,19 @@ get opcua values where url = opc.tcp://127.0.0.1:4840/freeopcua/server and nodes
 OPCUA Nodes values
 id        name                             source_timestamp           server_timestamp status_code           value              
 ---------|--------------------------------|--------------------------|----------------|---------------------|------------------|
+ns=2;i=10|d2001pelubepumpmtr1stop         |2025-04-04 00:55:09.453522|                |Good                 |0.8334308176491271|
+<< COMMENT
+
+# a bunch of params 
+AL > <get opcua values where url = opc.tcp://127.0.0.1:4840/freeopcua/server and nodes=[
+    "ns=2;i=1", "ns=2;i=2", "ns=2;i=3", "ns=2;i=4", "ns=2;i=5", 
+    "ns=2;i=6", "ns=2;i=7", "ns=2;i=8", "ns=2;i=9", "ns=2;i=10"
+] and include = all>
+
+<< COMMENT
+OPCUA Nodes values
+id        name                             source_timestamp           server_timestamp status_code           value              
+---------|--------------------------------|--------------------------|----------------|---------------------|------------------|
 ns=2;i=1 |deviceset                       |                          |                |BadAttributeIdInvalid|                  |
 ns=2;i=2 |wago 750-8210 pfc200 g2 4eth xtr|                          |                |BadAttributeIdInvalid|                  |
 ns=2;i=3 |resources                       |                          |                |BadAttributeIdInvalid|                  |
