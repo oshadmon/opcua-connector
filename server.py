@@ -298,10 +298,19 @@ class OPCUAServer:
 
 
 if __name__ == "__main__":
+    """
+    Sample OPC-UA with (optional) authentication using either int or string naming
+    optional arguments:
+        -h, --help                      show this help message and exit
+        --opcua-conn    OPCUA_CONN      OPC-UA connection IP + Port
+        --string        [STRING]        Use string var names
+        --enable-auth   [ENABLE_AUTH]   enable authentication 
+
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument('--opcua-conn', type=str, default='127.0.0.1:4840', help="OPC-UA connection IP + Port")
     parser.add_argument('--string', type=bool, nargs='?', const=True, default=False, help='Use string var names')
-    parser.add_argument('--enable-auth', type=bool, nargs='?', const=True, default=False, help='Enable authentication')
+    parser.add_argument('--enable-auth', type=bool, nargs='?', const=True, default=False, help='Enable authentication (user: user1 | password: pass123)')
     args = parser.parse_args()
 
     opcua_server = OPCUAServer(endpoint=args.opcua_conn)
