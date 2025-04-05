@@ -11,7 +11,7 @@ python3  -m pip install --upgrade opcua>=0.0
 ```
 
 2. Start OPC-UA service
-When using authentication - user: user1 | password: pass123
+When using authentication, the authetication type is `ua.SecurityPolicyType.Basic256Sha256_SignAndEncrypt`  - user: root | password: demo
 ```shell
 python3 server.py [--conn 127.0.0.1:4840] [--string-mode {int, short, long}] [--enable-auth] 
 ```
