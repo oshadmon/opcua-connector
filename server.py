@@ -6,7 +6,7 @@ import time
 from opcua import Server, ua
 from opcua.server.user_manager import UserManager
 
-def user_authentication(username, password):
+def authenticate(username, password):
     return username == "user1" and password == "pass123"
 
 index_int = 0
@@ -53,23 +53,16 @@ class OPCUAServer:
             }
         }
 
-    def build_nodeid(self, name, parent_path="", string_mode:str='int'):
-        full_name = name
-        if string_mode == 'int':
-            full_name = int(abs(hash(name)) % 100000)
-
-        if string_mode == 'long':
-            full_name = f"{parent_path}.{name}" if parent_path else name
-        return ua.NodeId(full_name, self.idx)
-
     def setup_server(self, enable_auth:bool=False, string_mode:str='int'):
         self.server.set_endpoint(self.endpoint)
         self.server.set_server_name("OPC-UA Server")
         self.idx = self.server.register_namespace("http://example.org")
 
         if enable_auth:
-            self.server.set_security_policy([ua.SecurityPolicyType.NoSecurity])
-            self.server.user_manager = UserManager(user_authentication)
+            self.server.set_security_policy(ua.SecurityPolicyType.Basic256Sha256_SignAndEncrypt)
+            self.setup_authentication()
+        # else:
+        #     self.server.set_security_policy(ua.SecurityPolicyType.NoSecurity)
 
         objects = self.server.get_objects_node()
         device_set = objects.add_object(
@@ -93,6 +86,34 @@ class OPCUAServer:
             "GlobalVars")
 
         return global_vars
+
+    def setup_authentication(self):
+        """Configure user authentication."""
+        # Usernames and passwords can be stored securely or loaded from a database.
+        self.valid_users = {
+            "root": "demo"
+        }
+
+        # Here we define the authentication callback function
+        self.server.user_manager.authenticate = self.authenticate_user
+
+    def authenticate_user(self, username, password):
+        """Authenticate user based on username and password."""
+        if username in self.valid_users and self.valid_users[username] == password:
+            print(f"User '{username}' authenticated successfully.")
+            return True
+        else:
+            print(f"Authentication failed for user '{username}'.")
+            return False
+
+    def build_nodeid(self, name, parent_path="", string_mode:str='int'):
+        full_name = name
+        if string_mode == 'int':
+            full_name = int(abs(hash(name)) % 100000)
+
+        if string_mode == 'long':
+            full_name = f"{parent_path}.{name}" if parent_path else name
+        return ua.NodeId(full_name, self.idx)
 
     def add_variables(self, parent_obj, tag_dict, parent_path="", string_mode:str='int'):
         tag_var_dict = {}
