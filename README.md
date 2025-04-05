@@ -51,7 +51,7 @@ LL_AlarmSetpoint                                                                
 /Users/orishadmon/opcua-connector/server.py --string short
 
 # sample AnyLog/EdgeLake call + output
-AL > get opcua values where url=opc.tcp://127.0.0.1:4840/freeopcua/server and node="ns=2;s=FT2001LL_AlarmSetpoint" and include=all
+AL > get opcua values where url=opc.tcp://10.0.0.78:4840/freeopcua/server and node="ns=2;s=FT2001LL_AlarmSetpoint" and include=all
 
 OPCUA Nodes values
 id                            name                   source_timestamp           server_timestamp status_code value 
@@ -59,16 +59,16 @@ id                            name                   source_timestamp           
 ns=2;s=FT2001LL_AlarmSetpoint|ft2001ll_alarmsetpoint|2025-04-05 03:15:01.819446|                |Good       |  919|
 ```
 
-* aaa
+* View data based on idx as an integer
 ```shell
 /Users/orishadmon/opcua-connector/server.py --string int 
 
 
 # sample AnyLog/EdgeLake call + output
-AL > get opcua values where url=opc.tcp://127.0.0.1:4840/freeopcua/server and node="ns=2;i=48090" and include=all
+AL > get opcua values where url=opc.tcp://127.0.0.1:4840/freeopcua/server and node="ns=2;i=2017" and include=all
 
 OPCUA Nodes values
 id           name                   source_timestamp           server_timestamp status_code value 
 ------------|----------------------|--------------------------|----------------|-----------|-----|
-ns=2;i=48090|ft2001ll_alarmsetpoint|2025-04-05 03:31:08.329521|                |Good       |  671|
+ns=2;i=2017 |ft2001ll_alarmsetpoint|2025-04-05 03:31:08.329521|                |Good       |  671|
 ```

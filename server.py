@@ -6,10 +6,49 @@ import time
 from opcua import Server, ua
 from opcua.server.user_manager import UserManager
 
+    # Static NodeIds for Objects (folders/nodes)
+IDX_OBJECTS = [
+    "DeviceSet",
+    "WAGO 750-8210 PFC200 G2 4ETH XTR",
+    "Resources",
+    "Application",
+    "GlobalVars",
+    "VFD_CNTRL_TAGS",
+    "PE_Lube_Tags",
+    "Outputs",
+    "Inputs",
+    "CHOKE_TAGS",
+    "CHARGE_PUMP_TAGS",
+    "ALARM_TAGS"
+]
+
+# Static NodeIds for Variables (leaf tags)
+IDX_VARIABLES =[
+    "D1001VFDStop",
+    "D1001VFDStopSpeedSetpoint",
+    "D2001PELubePumpMtr1Stop",
+    "D2003PELubeCoolerManualSpeedValue",
+    "D2002PELubePumpMtr2ManualSpeedValue",
+    "D1001DriveRunCommandDO",
+    "D1001DriveSpeedReferenceAO_ENG",
+    "D1002ChargePumpDriveSpeedReferenceAO_ENG",
+    "D2001PELubePumpDriveSpeedReferenceAO_ENG",
+    "CV1001PositionFeedbackAI_ENG",
+    "CV1002PositionFeedbackAI_ENG",
+    "D1001MotorSpeedAI_ENG",
+    "D1001MotorTorqueAI_ENG",
+    "CV1002ChokeValvePositionSetpoint",
+    "CV1002ChokeValveStop",
+    "D1002ChargePumpMotorStop",
+    "FT2001LL_AlarmSetpoint",
+    "LS1001H_AlarmSetpoint",
+    "LS1002H_AlarmSetpoint"
+]
+
+
 def authenticate(username, password):
     return username == "user1" and password == "pass123"
 
-index_int = 0
 
 class OPCUAServer:
     def __init__(self, endpoint="127.0.0.1:4840"):
@@ -59,7 +98,7 @@ class OPCUAServer:
         self.idx = self.server.register_namespace("http://example.org")
 
         if enable_auth:
-            self.server.set_security_policy(ua.SecurityPolicyType.Basic256Sha256_SignAndEncrypt)
+            self.server.set_security_policy([ua.SecurityPolicyType.Basic256Sha256_SignAndEncrypt])
             self.setup_authentication()
         # else:
         #     self.server.set_security_policy(ua.SecurityPolicyType.NoSecurity)
@@ -108,12 +147,19 @@ class OPCUAServer:
 
     def build_nodeid(self, name, parent_path="", string_mode:str='int'):
         full_name = name
-        if string_mode == 'int':
-            full_name = int(abs(hash(name)) % 100000)
-
-        if string_mode == 'long':
+        if string_mode == 'int' and full_name in IDX_OBJECTS:
+            full_name = IDX_OBJECTS.index(full_name) + 1000
+        elif string_mode == 'int' and full_name in IDX_VARIABLES:
+            full_name = IDX_VARIABLES.index(full_name) + 2001
+            if len(IDX_OBJECTS) >= 2000:
+                full_name = IDX_VARIABLES.index(full_name) + 2001 + len(IDX_OBJECTS)
+        elif string_mode == 'int':
+            raise ValueError(f'Missing {name} form both objects and variables list(s)')
+        elif string_mode == 'long':
             full_name = f"{parent_path}.{name}" if parent_path else name
+
         return ua.NodeId(full_name, self.idx)
+
 
     def add_variables(self, parent_obj, tag_dict, parent_path="", string_mode:str='int'):
         tag_var_dict = {}
