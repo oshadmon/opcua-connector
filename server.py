@@ -6,7 +6,7 @@ import time
 from opcua import Server, ua
 from opcua.server.user_manager import UserManager
 
-    # Static NodeIds for Objects (folders/nodes)
+# Static NodeIds for Objects (folders/nodes)
 IDX_OBJECTS = [
     "DeviceSet",
     "WAGO 750-8210 PFC200 G2 4ETH XTR",
@@ -23,27 +23,81 @@ IDX_OBJECTS = [
 ]
 
 # Static NodeIds for Variables (leaf tags)
-IDX_VARIABLES =[
-    "D1001VFDStop",
-    "D1001VFDStopSpeedSetpoint",
-    "D2001PELubePumpMtr1Stop",
-    "D2003PELubeCoolerManualSpeedValue",
-    "D2002PELubePumpMtr2ManualSpeedValue",
-    "D1001DriveRunCommandDO",
-    "D1001DriveSpeedReferenceAO_ENG",
-    "D1002ChargePumpDriveSpeedReferenceAO_ENG",
-    "D2001PELubePumpDriveSpeedReferenceAO_ENG",
-    "CV1001PositionFeedbackAI_ENG",
-    "CV1002PositionFeedbackAI_ENG",
-    "D1001MotorSpeedAI_ENG",
-    "D1001MotorTorqueAI_ENG",
-    "CV1002ChokeValvePositionSetpoint",
-    "CV1002ChokeValveStop",
-    "D1002ChargePumpMotorStop",
-    "FT2001LL_AlarmSetpoint",
-    "LS1001H_AlarmSetpoint",
-    "LS1002H_AlarmSetpoint"
-]
+""" 
+int: 18
+float: 19
+char: 14
+bool: 15
+"""
+IDX_VARIABLES = {
+  "D1001VFDStop": "int",
+  "D1001VFDStopSpeedSetpoint": "char",
+  "D2001PELubePumpMtr1Stop": "int",
+  "D2003PELubeCoolerManualSpeedValue": "float",
+  "D2002PELubePumpMtr2ManualSpeedValue": "float",
+  "D1001DriveRunCommandDO": "bool",
+  "D1001DriveSpeedReferenceAO_ENG": "bool",
+  "D1002ChargePumpDriveSpeedReferenceAO_ENG": "float",
+  "D2001PELubePumpDriveSpeedReferenceAO_ENG": "bool",
+  "D1002ChargePumpVFDRunCommandDO": "char",
+  "D2001PELubePumpVFDRunCommandDO": "char",
+  "CV1001PositionFeedbackAI_ENG": "int",
+  "CV1002PositionFeedbackAI_ENG": "float",
+  "D1001MotorSpeedAI_ENG": "char",
+  "D1001MotorTorqueAI_ENG": "char",
+  "D1002ChargePumpSpeedAI_ENG": "float",
+  "D1002ChargePumpTorqueAI_ENG": "float",
+  "D2001PELubePumpDriveSpeedAI_ENG": "int",
+  "FT1001MainLoopFlowrateAI_ENG": "int",
+  "FT2001PELubeSupplyFlowAI_ENG": "bool",
+  "FT2001PELubeSupplyFlowSetpoint_ENG": "bool",
+  "LT1001MainWaterTankLevelAI_ENG": "float",
+  "PT1001MaingPumpChargePressAI_ENG": "char",
+  "PT1002MainPumpDischargePressAI_ENG": "char",
+  "PT1003MainPumpDischargePressAI_ENG": "float",
+  "PT1004ChokeCV1002PressAI_ENG": "float",
+  "PT2001PELubeSupplyPressAI_ENG": "int",
+  "PT2001PELubeSupplyPressSetpoint_ENG": "int",
+  "PT2002PELubeSupplyPressAI_ENG": "bool",
+  "PT2002PELubeSupplyPressSetpoint_ENG": "int",
+  "TC1001PumpTempSensorAI_ENG": "bool",
+  "TC1002PumpTempSensorAI_ENG": "float",
+  "TC1003PumpTempSensorAI_ENG": "int",
+  "TC1004PumpTempSensorAI_ENG": "bool",
+  "TC1005PumpTempSensorAI_ENG": "char",
+  "TC1006PumpTempSensorAI_ENG": "float",
+  "TC1007PumpTempSensorAI_ENG": "bool",
+  "TC1008PumpTempSensorAI_ENG": "float",
+  "TC1009PumpTempSensorAI_ENG": "float",
+  "TC1010PumpTempSensorAI_ENG": "int",
+  "TC1011PumpTempSensorAI_ENG": "int",
+  "TC1012PumpTempSensorAI_ENG": "bool",
+  "TT1001MainWaterTemperatureAI_ENG": "int",
+  "TT2001PELubeTankTempAI_ENG": "bool",
+  "TT2002PELubeSupplyTempAI_ENG": "char",
+  "CV1002ChokeValvePositionSetpoint": "int",
+  "CV1002ChokeValveStop": "float",
+  "CV1001ChokeValveStop": "char",
+  "CV1001ChokeValvePositionSetpoint": "char",
+  "D1002ChargePumpMotorStop": "bool",
+  "FT2001LL_AlarmSetpoint": "char",
+  "LS1001H_AlarmSetpoint": "bool",
+  "LS1002H_AlarmSetpoint": "char",
+  "LS1003H_AlarmSetpoint": "int",
+  "LS1004HH_AlarmSetpoint": "int",
+  "LS2001L_AlarmSetpoint": "char",
+  "LT1001L_AlarmSetpoint": "int",
+  "LT1001LL_AlarmSetpoint": "float",
+  "PT1001L_AlarmSetpoint": "int",
+  "PT1001LL_AlarmSetpoint": "float",
+  "PT1002HH_AlarmSetpoint": "float",
+  "PT1003HH_AlarmSetpoint": "int",
+  "PT2001HH_AlarmSetpoint": "float",
+  "PT2002L_AlarmSetpoint": "bool",
+  "PT2002LL_AlarmSetpoint": "bool",
+  "TT1001H_AlarmSetpoint": "float"
+}
+
 
 
 def authenticate(username, password):
@@ -51,46 +105,99 @@ def authenticate(username, password):
 
 
 class OPCUAServer:
-    def __init__(self, endpoint="127.0.0.1:4840"):
+    def __init__(self, endpoint="127.0.0.1:4840", is_advanced:bool=False):
         self.server = Server()
         self.endpoint = f"opc.tcp://{endpoint}/freeopcua/server/"
         self.idx = None
 
         self.tag_hierarchy = {
             "VFD_CNTRL_TAGS": {
-                'D1001VFDStop': "int",
+                'D1001VFDStop': "float",
                 'D1001VFDStopSpeedSetpoint': "float"
             },
             "PE_Lube_Tags": {
-                'D2001PELubePumpMtr1Stop': "char",
-                'D2003PELubeCoolerManualSpeedValue': "bool",
-                'D2002PELubePumpMtr2ManualSpeedValue': "int"
+                'D2001PELubePumpMtr1Stop': "float",
+                'D2003PELubeCoolerManualSpeedValue': "float",
+                'D2002PELubePumpMtr2ManualSpeedValue': "float"
             },
             "Outputs": {
                 'D1001DriveRunCommandDO': "float",
-                'D1001DriveSpeedReferenceAO_ENG': "char",
-                'D1002ChargePumpDriveSpeedReferenceAO_ENG': "bool",
-                'D2001PELubePumpDriveSpeedReferenceAO_ENG': "int"
+                'D1001DriveSpeedReferenceAO_ENG': "float",
+                'D1002ChargePumpDriveSpeedReferenceAO_ENG': "float",
+                'D2001PELubePumpDriveSpeedReferenceAO_ENG': "float",
+                'D1002ChargePumpVFDRunCommandDO': "float",
+                'D2001PELubePumpVFDRunCommandDO': "float"
             },
             "Inputs": {
                 'CV1001PositionFeedbackAI_ENG': "float",
-                'CV1002PositionFeedbackAI_ENG': "char",
-                'D1001MotorSpeedAI_ENG': "bool",
-                'D1001MotorTorqueAI_ENG': "int"
+                'CV1002PositionFeedbackAI_ENG': "float",
+                'D1001MotorSpeedAI_ENG': "float",
+                'D1001MotorTorqueAI_ENG': "float",
+                'D1002ChargePumpSpeedAI_ENG': "float",
+                'D1002ChargePumpTorqueAI_ENG': "float",
+                'D2001PELubePumpDriveSpeedAI_ENG': "float",
+                'FT1001MainLoopFlowrateAI_ENG': "float",
+                'FT2001PELubeSupplyFlowAI_ENG': "float",
+                'FT2001PELubeSupplyFlowSetpoint_ENG': "float",
+                'LT1001MainWaterTankLevelAI_ENG': "float",
+                'PT1001MaingPumpChargePressAI_ENG': "float",
+                'PT1002MainPumpDischargePressAI_ENG': "float",
+                'PT1003MainPumpDischargePressAI_ENG': "float",
+                'PT1004ChokeCV1002PressAI_ENG': "float",
+                'PT2001PELubeSupplyPressAI_ENG': "float",
+                'PT2001PELubeSupplyPressSetpoint_ENG': "float",
+                'PT2002PELubeSupplyPressAI_ENG': "float",
+                'PT2002PELubeSupplyPressSetpoint_ENG': "float",
+                'TC1001PumpTempSensorAI_ENG': "float",
+                'TC1002PumpTempSensorAI_ENG': "float",
+                'TC1003PumpTempSensorAI_ENG': "float",
+                'TC1004PumpTempSensorAI_ENG': "float",
+                'TC1005PumpTempSensorAI_ENG': "float",
+                'TC1006PumpTempSensorAI_ENG': "float",
+                'TC1007PumpTempSensorAI_ENG': "float",
+                'TC1008PumpTempSensorAI_ENG': "float",
+                'TC1009PumpTempSensorAI_ENG': "float",
+                'TC1010PumpTempSensorAI_ENG': "float",
+                'TC1011PumpTempSensorAI_ENG': "float",
+                'TC1012PumpTempSensorAI_ENG': "float",
+                'TT1001MainWaterTemperatureAI_ENG': "float",
+                'TT2001PELubeTankTempAI_ENG': "float",
+                'TT2002PELubeSupplyTempAI_ENG': "float"
             },
             "CHOKE_TAGS": {
                 'CV1002ChokeValvePositionSetpoint': "float",
-                'CV1002ChokeValveStop': "char"
+                'CV1002ChokeValveStop': "float",
+                'CV1001ChokeValveStop': "float",
+                'CV1001ChokeValvePositionSetpoint': "float"
             },
             "CHARGE_PUMP_TAGS": {
-                'D1002ChargePumpMotorStop': "bool"
+                'D1002ChargePumpMotorStop': "float"
             },
             "ALARM_TAGS": {
-                'FT2001LL_AlarmSetpoint': "int",
+                'FT2001LL_AlarmSetpoint': "float",
                 'LS1001H_AlarmSetpoint': "float",
-                'LS1002H_AlarmSetpoint': "bool"
+                'LS1002H_AlarmSetpoint': "float",
+                'LS1003H_AlarmSetpoint': "float",
+                'LS1004HH_AlarmSetpoint': "float",
+                'LS2001L_AlarmSetpoint': "float",
+                'LT1001L_AlarmSetpoint': "float",
+                'LT1001LL_AlarmSetpoint': "float",
+                'PT1001L_AlarmSetpoint': "float",
+                'PT1001LL_AlarmSetpoint': "float",
+                'PT1002HH_AlarmSetpoint': "float",
+                'PT1003HH_AlarmSetpoint': "float",
+                'PT2001HH_AlarmSetpoint': "float",
+                'PT2002L_AlarmSetpoint': "float",
+                'PT2002LL_AlarmSetpoint': "float",
+                'TT1001H_AlarmSetpoint': "float"
             }
         }
+
+        if is_advanced is True:
+            for tag in self.tag_hierarchy:
+                for index in self.tag_hierarchy[tag]:
+                    if index in IDX_VARIABLES:
+                        self.tag_hierarchy[tag][index] = IDX_VARIABLES[index]
 
     def setup_server(self, enable_auth:bool=False, string_mode:str='int'):
         self.server.set_endpoint(self.endpoint)
@@ -147,12 +254,13 @@ class OPCUAServer:
 
     def build_nodeid(self, name, parent_path="", string_mode:str='int'):
         full_name = name
+
         if string_mode == 'int' and full_name in IDX_OBJECTS:
             full_name = IDX_OBJECTS.index(full_name) + 1000
-        elif string_mode == 'int' and full_name in IDX_VARIABLES:
-            full_name = IDX_VARIABLES.index(full_name) + 2001
+        elif string_mode == 'int' and full_name in list(IDX_VARIABLES.keys()):
+            full_name = list(IDX_VARIABLES.keys()).index(full_name) + 2001
             if len(IDX_OBJECTS) >= 2000:
-                full_name = IDX_VARIABLES.index(full_name) + 2001 + len(IDX_OBJECTS)
+                full_name = list(IDX_VARIABLES.keys()).index(full_name) + 2001 + len(IDX_OBJECTS)
         elif string_mode == 'int':
             raise ValueError(f'Missing {name} form both objects and variables list(s)')
         elif string_mode == 'long':
@@ -233,13 +341,14 @@ if __name__ == "__main__":
             * short --          ns=2;s=FT2001LL_AlarmSetpoint
             * long  --          ns=2;s=DeviceSet.WAGO 750-8210 PFC200 G2 4ETH XTR.Resources.Application.GlobalVars.ALARM_TAGS.FT2001LL_AlarmSetpoint
         --enable-auth       Enable authentication
-"""
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument('--opcua-conn', type=str, default='127.0.0.1:4840', help="OPC-UA connection IP + Port")
     parser.add_argument('--string-mode', choices=['int', 'short', 'long'], default='int', help='String NodeId mode')
     parser.add_argument('--enable-auth', type=bool, nargs='?', const=True, default=False, help='Enable authentication')
+    parser.add_argument('--advanced-opcua', type=bool, nargs='?', const=True, default=False, help='Multiple data types, as opposed to only float values')
     args = parser.parse_args()
 
 
-    opcua_server = OPCUAServer(endpoint=args.opcua_conn)
+    opcua_server = OPCUAServer(endpoint=args.opcua_conn, is_advanced=True)
     opcua_server.run(enable_auth=args.enable_auth, string_mode=args.string_mode)
