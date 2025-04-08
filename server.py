@@ -424,5 +424,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
 
-    opcua_server = OPCUAServer(endpoint=args.opcua_conn, is_advanced=True)
+    opcua_server = OPCUAServer(endpoint=args.opcua_conn, is_advanced=args.advanced_opcua)
     opcua_server.run(enable_auth=args.enable_auth, string_mode=args.string_mode)
