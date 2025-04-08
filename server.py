@@ -132,7 +132,7 @@ IDX_VARIABLES = {
   "D2002PELubePumpDriveEff": "bool",
   "FT2001PELubeDriveCalculatedFlowrate_ENG": "char",
   "FT1001MainLoopCalculatedFlowrateAI_ENG": "char",
-  "FT2002PELubeDriveCalculatedFlowrate_ENG]": "bool"
+  "FT2002PELubeDriveCalculatedFlowrate_ENG": "bool"
 }
 
 
@@ -214,7 +214,7 @@ class OPCUAServer:
     "D2002PELubePumpDriveEff": "float",
     "FT2001PELubeDriveCalculatedFlowrate_ENG": "float",
     "FT1001MainLoopCalculatedFlowrateAI_ENG": "float",
-    "FT2002PELubeDriveCalculatedFlowrate_ENG]": "float"
+    "FT2002PELubeDriveCalculatedFlowrate_ENG": "float"
   },
   "CHOKE_TAGS": {
     "CV1002ChokeValvePositionSetpoint": "float",
