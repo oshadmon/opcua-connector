@@ -134,7 +134,7 @@ IDX_VARIABLES = {
   "FT1001MainLoopCalculatedFlowrateAI_ENG": "char",
   "FT2002PELubeDriveCalculatedFlowrate_ENG": "bool"
 }
-
+IDX_VARIABLES_FLOAT = {}
 
 
 def authenticate(username, password):
