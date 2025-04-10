@@ -320,7 +320,7 @@ class OPCUAServer:
 
     def get_random_value(self, vtype, min_val, max_val):
         return {
-            "int": random.randint(min_val, max_val),
+            "int": int(random.uniform(min_val, max_val)),
             "double": round(random.uniform(min_val, max_val), 2),
             "float": random.uniform(min_val, max_val),
             "bool": random.choice([True, False]),
