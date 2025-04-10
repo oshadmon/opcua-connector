@@ -25,117 +25,116 @@ IDX_OBJECTS = [
 # Static NodeIds for Variables (leaf tags)
 """ 
 int 27
-float 23
+float 13
+double 10
 char 26
 bool 27
 """
 IDX_VARIABLES = {
-  "D1001VFDStop": "float",
-  "D1001VFDStopSpeedSetpoint": "float",
-  "D2001PELubePumpMtr1Stop": "bool",
-  "D1001DriveRunCommandDO": "float",
-  "D1001DriveSpeedReferenceAO_ENG": "int",
-  "D1002ChargePumpDriveSpeedReferenceAO_ENG": "float",
-  "D2001PELubePumpDriveSpeedReferenceAO_ENG": "int",
-  "D1002ChargePumpVFDRunCommandDO": "float",
-  "D2001PELubePumpVFDRunCommandDO": "int",
-  "CV1001PositionFeedbackAI_ENG": "float",
-  "CV1002PositionFeedbackAI_ENG": "char",
-  "D1001MotorSpeedAI_ENG": "char",
-  "D1001MotorTorqueAI_ENG": "float",
-  "D1002ChargePumpSpeedAI_ENG": "char",
-  "D1002ChargePumpTorqueAI_ENG": "bool",
-  "D2001PELubePumpDriveSpeedAI_ENG": "int",
-  "FT1001MainLoopFlowrateAI_ENG": "float",
-  "FT2001PELubeSupplyFlowAI_ENG": "bool",
-  "FT2001PELubeSupplyFlowSetpoint_ENG": "char",
-  "LT1001MainWaterTankLevelAI_ENG": "bool",
-  "PT1001MaingPumpChargePressAI_ENG": "char",
-  "PT1002MainPumpDischargePressAI_ENG": "float",
-  "PT1003MainPumpDischargePressAI_ENG": "int",
-  "PT1004ChokeCV1002PressAI_ENG": "int",
-  "PT2001PELubeSupplyPressAI_ENG": "char",
-  "PT2001PELubeSupplyPressSetpoint_ENG": "int",
-  "PT2002PELubeSupplyPressAI_ENG": "bool",
-  "PT2002PELubeSupplyPressSetpoint_ENG": "char",
-  "TC1001PumpTempSensorAI_ENG": "int",
-  "TC1002PumpTempSensorAI_ENG": "float",
-  "TC1003PumpTempSensorAI_ENG": "bool",
-  "TC1004PumpTempSensorAI_ENG": "float",
-  "TC1005PumpTempSensorAI_ENG": "int",
-  "TC1006PumpTempSensorAI_ENG": "int",
-  "TC1007PumpTempSensorAI_ENG": "bool",
-  "TC1008PumpTempSensorAI_ENG": "bool",
-  "TC1009PumpTempSensorAI_ENG": "float",
-  "TC1010PumpTempSensorAI_ENG": "int",
-  "TC1011PumpTempSensorAI_ENG": "char",
-  "TC1012PumpTempSensorAI_ENG": "float",
-  "TT1001MainWaterTemperatureAI_ENG": "bool",
-  "TT2001PELubeTankTempAI_ENG": "char",
-  "TT2002PELubeSupplyTempAI_ENG": "char",
-  "CV1002ChokeValvePositionSetpoint": "int",
-  "CV1002ChokeValveStop": "int",
-  "CV1001ChokeValveStop": "float",
-  "CV1001ChokeValvePositionSetpoint": "float",
-  "D1002ChargePumpMotorStop": "int",
-  "FT2001LL_AlarmSetpoint": "char",
-  "LS1001H_AlarmSetpoint": "bool",
-  "LS1002H_AlarmSetpoint": "bool",
-  "LS1003H_AlarmSetpoint": "float",
-  "LS1004HH_AlarmSetpoint": "int",
-  "LS2001L_AlarmSetpoint": "char",
-  "LT1001L_AlarmSetpoint": "bool",
-  "LT1001LL_AlarmSetpoint": "int",
-  "PT1001L_AlarmSetpoint": "float",
-  "PT1001LL_AlarmSetpoint": "float",
-  "PT1002HH_AlarmSetpoint": "float",
-  "PT1003HH_AlarmSetpoint": "char",
-  "PT2001HH_AlarmSetpoint": "int",
-  "PT2002L_AlarmSetpoint": "bool",
-  "PT2002LL_AlarmSetpoint": "int",
-  "TT1001H_AlarmSetpoint": "int",
-  "TT1001HH_AlarmSetpoint": "int",
-  "TT2001H_AlarmSetpoint": "char",
-  "TT2001HH_AlarmSetpoint": "int",
-  "FT2001LL_Alarm": "int",
-  "LS1001H_Alarm": "bool",
-  "LS1002H_Alarm": "bool",
-  "LS1003H_Alarm": "bool",
-  "LS1004HH_Alarm": "bool",
-  "LS2001L_Alarm": "char",
-  "LT1001L_Alarm": "float",
-  "LT1001LL_Alarm": "bool",
-  "PT1001L_Alarm": "float",
-  "PT1001LL_Alarm": "int",
-  "PT1002HH_Alarm": "char",
-  "PT1003HH_Alarm": "char",
-  "PT2001HH_Alarm": "bool",
-  "PT2002L_Alarm": "bool",
-  "PT2002LL_Alarm": "bool",
-  "TT1001H_Alarm": "char",
-  "TT1001HH_Alarm": "char",
-  "TT2001H_Alarm": "bool",
-  "TT2001HH_Alarm": "char",
-  "D2002PELubePumpVFDRunCommandDO": "char",
-  "D2002PELubePumpDriveSpeedAI_ENG": "bool",
-  "PT2006PELubeSupplyPressSetpointAI_ENG": "int",
-  "PT2006PELubeSupplyPressAI_ENG": "char",
-  "PT2005PELubeSupplyPressAI_ENG": "int",
-  "PT2005PELubeSupplyPressSetpointAI_ENG": "float",
-  "PT2004PELubeSupplyPressAI_ENG": "bool",
-  "PT2003PELubeSupplyPressAI_ENG": "bool",
-  "FT2002PELubeSupplyFlowAI_ENG": "char",
-  "D2003PELubeCoolerManualSpeedValue": "int",
-  "D2002PELubePumpMtr2ManualSpeedValue": "int",
-  "D1001MotorEff": "float",
-  "D2001PELubePumpDriveEff": "char",
-  "D2002PELubePumpDriveEff": "bool",
-  "FT2001PELubeDriveCalculatedFlowrate_ENG": "char",
-  "FT1001MainLoopCalculatedFlowrateAI_ENG": "char",
-  "FT2002PELubeDriveCalculatedFlowrate_ENG": "bool"
+   "D1001VFDStop": {'alter_datatype': 'float', 'idx': 0, 'min': 0.0, 'max': 1.0},
+   "D1001VFDStopSpeedSetpoint": {'alter_datatype': 'double', 'idx': 1, 'min': 0.0, 'max': 50.0},
+   "D2001PELubePumpMtr1Stop": {'alter_datatype': 'bool', 'idx': 2, 'min': 0.0, 'max': 1.0},
+   "D1001DriveRunCommandDO": {'alter_datatype': 'float', 'idx': 3, 'min': 0.0, 'max': 1.0},
+   "D1001DriveSpeedReferenceAO_ENG": {'alter_datatype': 'int', 'idx': 4, 'min': 0.0, 'max': 1491.0},
+   "D1002ChargePumpDriveSpeedReferenceAO_ENG": {'alter_datatype': 'double', 'idx': 5, 'min': 0.0, 'max': 1.8},
+   "D2001PELubePumpDriveSpeedReferenceAO_ENG": {'alter_datatype': 'int', 'idx': 6, 'min': 0.0, 'max': 1.0},
+   "D1002ChargePumpVFDRunCommandDO": {'alter_datatype': 'float', 'idx': 7, 'min': 0.0, 'max': 1.0},
+   "D2001PELubePumpVFDRunCommandDO": {'alter_datatype': 'int', 'idx': 8, 'min': 0.0, 'max': 1.0},
+   "CV1001PositionFeedbackAI_ENG": {'alter_datatype': 'float', 'idx': 9, 'min': 0.0, 'max': 100.0},
+   "CV1002PositionFeedbackAI_ENG": {'alter_datatype': 'char', 'idx': 10, 'min': 0.0, 'max': 100.0},
+   "D1001MotorSpeedAI_ENG": {'alter_datatype': 'char', 'idx': 11, 'min': 0.0, 'max': 1499.541259765625},
+   "D1001MotorTorqueAI_ENG": {'alter_datatype': 'double', 'idx': 12, 'min': 0.0, 'max': 2614.678955078125},
+   "D1002ChargePumpSpeedAI_ENG": {'alter_datatype': 'char', 'idx': 13, 'min': 0.0, 'max': 1918.417236328125},
+   "D1002ChargePumpTorqueAI_ENG": {'alter_datatype': 'bool', 'idx': 14, 'min': 0.0, 'max': 0.0},
+   "D2001PELubePumpDriveSpeedAI_ENG": {'alter_datatype': 'int', 'idx': 15, 'min': 0.0, 'max': 14414.728515625},
+   "FT1001MainLoopFlowrateAI_ENG": {'alter_datatype': 'double', 'idx': 16, 'min': 0.0, 'max': 1546.874755859375},
+   "FT2001PELubeSupplyFlowAI_ENG": {'alter_datatype': 'bool', 'idx': 17, 'min': 0.0, 'max': 87.02466583251953},
+   "FT2001PELubeSupplyFlowSetpoint_ENG": {'alter_datatype': 'char', 'idx': 18, 'min': 0.0, 'max': 0.0},
+   "LT1001MainWaterTankLevelAI_ENG": {'alter_datatype': 'bool', 'idx': 19, 'min': 0.0, 'max': 93.24625396728516},
+   "PT1001MaingPumpChargePressAI_ENG": {'alter_datatype': 'char', 'idx': 20, 'min': 0.0, 'max': 114.5335159301758},
+   "PT1002MainPumpDischargePressAI_ENG": {'alter_datatype': 'double', 'idx': 21, 'min': 0.0, 'max': 3.920371398925781},
+   "PT1003MainPumpDischargePressAI_ENG": {'alter_datatype': 'int', 'idx': 22, 'min': 0.0, 'max': 1.79097607421875},
+   "PT1004ChokeCV1002PressAI_ENG": {'alter_datatype': 'int', 'idx': 23, 'min': 0.0, 'max': 0.0},
+   "PT2001PELubeSupplyPressAI_ENG": {'alter_datatype': 'char', 'idx': 24, 'min': 0.0, 'max': 246.5438385009766},
+   "PT2001PELubeSupplyPressSetpoint_ENG": {'alter_datatype': 'int', 'idx': 25, 'min': 0.0, 'max': 0.0},
+   "PT2002PELubeSupplyPressAI_ENG": {'alter_datatype': 'bool', 'idx': 26, 'min': 0.0, 'max': 105.1539306640625},
+   "PT2002PELubeSupplyPressSetpoint_ENG": {'alter_datatype': 'char', 'idx': 27, 'min': 0.0, 'max': 0.0},
+   "TC1001PumpTempSensorAI_ENG": {'alter_datatype': 'int', 'idx': 28, 'min': -16.59999847412109, 'max': 210.1999969482422},
+   "TC1002PumpTempSensorAI_ENG": {'alter_datatype': 'float', 'idx': 29, 'min': 0.0, 'max': 104.0},
+   "TC1003PumpTempSensorAI_ENG": {'alter_datatype': 'bool', 'idx': 30, 'min': 0.0, 'max': 127.3999938964844},
+   "TC1004PumpTempSensorAI_ENG": {'alter_datatype': 'float', 'idx': 31, 'min': 0.0, 'max': 107.5999984741211},
+   "TC1005PumpTempSensorAI_ENG": {'alter_datatype': 'int', 'idx': 32, 'min': 0.0, 'max': 109.4000015258789},
+   "TC1006PumpTempSensorAI_ENG": {'alter_datatype': 'int', 'idx': 33, 'min': 0.0, 'max': 102.1999969482422},
+   "TC1007PumpTempSensorAI_ENG": {'alter_datatype': 'bool', 'idx': 34, 'min': 0.0, 'max': 111.1999969482422},
+   "TC1008PumpTempSensorAI_ENG": {'alter_datatype': 'bool', 'idx': 35, 'min': 0.0, 'max': 105.7999954223633},
+   "TC1009PumpTempSensorAI_ENG": {'alter_datatype': 'double', 'idx': 36, 'min': 0.0, 'max': 105.7999954223633},
+   "TC1010PumpTempSensorAI_ENG": {'alter_datatype': 'int', 'idx': 37, 'min': 0.0, 'max': 5928.7998046875},
+   "TC1011PumpTempSensorAI_ENG": {'alter_datatype': 'char', 'idx': 38, 'min': 0.0, 'max': 215.5999908447266},
+   "TC1012PumpTempSensorAI_ENG": {'alter_datatype': 'double', 'idx': 39, 'min': 0.0, 'max': 111.1999969482422},
+   "TT1001MainWaterTemperatureAI_ENG": {'alter_datatype': 'bool', 'idx': 40, 'min': 0.0, 'max': 86.41093444824219},
+   "TT2001PELubeTankTempAI_ENG": {'alter_datatype': 'char', 'idx': 41, 'min': 0.0, 'max': 121.0767364501953},
+   "TT2002PELubeSupplyTempAI_ENG": {'alter_datatype': 'char', 'idx': 42, 'min': 0.0, 'max': 121.2526016235352},
+   "CV1002ChokeValvePositionSetpoint": {'alter_datatype': 'int', 'idx': 43, 'min': 0.0, 'max': 1.0},
+   "CV1002ChokeValveStop": {'alter_datatype': 'int', 'idx': 44, 'min': 0.0, 'max': 1.0},
+   "CV1001ChokeValveStop": {'alter_datatype': 'float', 'idx': 45, 'min': 0.0, 'max': 1.0},
+   "CV1001ChokeValvePositionSetpoint": {'alter_datatype': 'double', 'idx': 46, 'min': 0.0, 'max': 1.0},
+   "D1002ChargePumpMotorStop": {'alter_datatype': 'int', 'idx': 47, 'min': 0.0, 'max': 1.0},
+   "FT2001LL_AlarmSetpoint": {'alter_datatype': 'char', 'idx': 48, 'min': 0.0, 'max': 65.0},
+   "LS1001H_AlarmSetpoint": {'alter_datatype': 'bool', 'idx': 49, 'min': 0.0, 'max': 0.0},
+   "LS1002H_AlarmSetpoint": {'alter_datatype': 'bool', 'idx': 50, 'min': 0.0, 'max': 0.0},
+   "LS1003H_AlarmSetpoint": {'alter_datatype': 'float', 'idx': 51, 'min': 0.0, 'max': 0.0},
+   "LS1004HH_AlarmSetpoint": {'alter_datatype': 'int', 'idx': 52, 'min': 0.0, 'max': 0.0},
+   "LS2001L_AlarmSetpoint": {'alter_datatype': 'char', 'idx': 53, 'min': 0.0, 'max': 0.0},
+   "LT1001L_AlarmSetpoint": {'alter_datatype': 'bool', 'idx': 54, 'min': 0.0, 'max': 100.0},
+   "LT1001LL_AlarmSetpoint": {'alter_datatype': 'int', 'idx': 55, 'min': 0.0, 'max': 60.0},
+   "PT1001L_AlarmSetpoint": {'alter_datatype': 'float', 'idx': 56, 'min': 0.0, 'max': 80.0},
+   "PT1001LL_AlarmSetpoint": {'alter_datatype': 'double', 'idx': 57, 'min': 0.0, 'max': 50.0},
+   "PT1002HH_AlarmSetpoint": {'alter_datatype': 'float', 'idx': 58, 'min': 0.0, 'max': 5000.0},
+   "PT1003HH_AlarmSetpoint": {'alter_datatype': 'char', 'idx': 59, 'min': 0.0, 'max': 5000.0},
+   "PT2001HH_AlarmSetpoint": {'alter_datatype': 'int', 'idx': 60, 'min': 0.0, 'max': 250.0},
+   "PT2002L_AlarmSetpoint": {'alter_datatype': 'bool', 'idx': 61, 'min': 0.0, 'max': 50.0},
+   "PT2002LL_AlarmSetpoint": {'alter_datatype': 'int', 'idx': 62, 'min': 0.0, 'max': 55.0},
+   "TT1001H_AlarmSetpoint": {'alter_datatype': 'int', 'idx': 63, 'min': 0.0, 'max': 105.0},
+   "TT1001HH_AlarmSetpoint": {'alter_datatype': 'int', 'idx': 64, 'min': 0.0, 'max': 110.0},
+   "TT2001H_AlarmSetpoint": {'alter_datatype': 'char', 'idx': 65, 'min': 0.0, 'max': 145.0},
+   "TT2001HH_AlarmSetpoint": {'alter_datatype': 'int', 'idx': 66, 'min': 0.0, 'max': 165.0},
+   "FT2001LL_Alarm": {'alter_datatype': 'int', 'idx': 67, 'min': 0.0, 'max': 1.0},
+   "LS1001H_Alarm": {'alter_datatype': 'bool', 'idx': 68, 'min': 0.0, 'max': 1.0},
+   "LS1002H_Alarm": {'alter_datatype': 'bool', 'idx': 69, 'min': 0.0, 'max': 0.0},
+   "LS1003H_Alarm": {'alter_datatype': 'bool', 'idx': 70, 'min': 0.0, 'max': 0.0},
+   "LS1004HH_Alarm": {'alter_datatype': 'bool', 'idx': 71, 'min': 0.0, 'max': 0.0},
+   "LS2001L_Alarm": {'alter_datatype': 'char', 'idx': 72, 'min': 0.0, 'max': 1.0},
+   "LT1001L_Alarm": {'alter_datatype': 'float', 'idx': 73, 'min': 0.0, 'max': 1.0},
+   "LT1001LL_Alarm": {'alter_datatype': 'bool', 'idx': 74, 'min': 0.0, 'max': 1.0},
+   "PT1001L_Alarm": {'alter_datatype': 'double', 'idx': 75, 'min': 0.0, 'max': 1.0},
+   "PT1001LL_Alarm": {'alter_datatype': 'int', 'idx': 76, 'min': 0.0, 'max': 1.0},
+   "PT1002HH_Alarm": {'alter_datatype': 'char', 'idx': 77, 'min': 0.0, 'max': 1.0},
+   "PT1003HH_Alarm": {'alter_datatype': 'char', 'idx': 78, 'min': 0.0, 'max': 0.0},
+   "PT2001HH_Alarm": {'alter_datatype': 'bool', 'idx': 79, 'min': 0.0, 'max': 1.0},
+   "PT2002L_Alarm": {'alter_datatype': 'bool', 'idx': 80, 'min': 0.0, 'max': 0.0},
+   "PT2002LL_Alarm": {'alter_datatype': 'bool', 'idx': 81, 'min': 0.0, 'max': 1.0},
+   "TT1001H_Alarm": {'alter_datatype': 'char', 'idx': 82, 'min': 0.0, 'max': 1.0},
+   "TT1001HH_Alarm": {'alter_datatype': 'char', 'idx': 83, 'min': 0.0, 'max': 1.0},
+   "TT2001H_Alarm": {'alter_datatype': 'bool', 'idx': 84, 'min': 0.0, 'max': 0.0},
+   "TT2001HH_Alarm": {'alter_datatype': 'char', 'idx': 85, 'min': 0.0, 'max': 1.0},
+   "D2002PELubePumpVFDRunCommandDO": {'alter_datatype': 'char', 'idx': 86, 'min': 0.0, 'max': 1.0},
+   "D2002PELubePumpDriveSpeedAI_ENG": {'alter_datatype': 'bool', 'idx': 87, 'min': 0.0, 'max': 1235.37060546875},
+   "PT2006PELubeSupplyPressSetpointAI_ENG": {'alter_datatype': 'int', 'idx': 88, 'min': 0.0, 'max': 0.0},
+   "PT2006PELubeSupplyPressAI_ENG": {'alter_datatype': 'char', 'idx': 89, 'min': 0.0, 'max': 209.7582855224609},
+   "PT2005PELubeSupplyPressAI_ENG": {'alter_datatype': 'int', 'idx': 90, 'min': 0.0, 'max': 84.48954010009766},
+   "PT2005PELubeSupplyPressSetpointAI_ENG": {'alter_datatype': 'float', 'idx': 91, 'min': 0.0, 'max': 0.0},
+   "PT2004PELubeSupplyPressAI_ENG": {'alter_datatype': 'bool', 'idx': 92, 'min': 0.0, 'max': 293.5883178710938},
+   "PT2003PELubeSupplyPressAI_ENG": {'alter_datatype': 'bool', 'idx': 93, 'min': 0.0, 'max': 300.1100463867188},
+   "FT2002PELubeSupplyFlowAI_ENG": {'alter_datatype': 'char', 'idx': 94, 'min': 0.0, 'max': 26.51929473876953},
+   "D2003PELubeCoolerManualSpeedValue": {'alter_datatype': 'int', 'idx': 95, 'min': 0.0, 'max': 1.0},
+   "D2002PELubePumpMtr2ManualSpeedValue": {'alter_datatype': 'int', 'idx': 96, 'min': 0.0, 'max': 8.0},
+   "D1001MotorEff": {'alter_datatype': 'float', 'idx': 97, 'min': 0.0, 'max': 100.0},
+   "D2001PELubePumpDriveEff": {'alter_datatype': 'char', 'idx': 98, 'min': 0.0, 'max': 111867.6015625},
+   "D2002PELubePumpDriveEff": {'alter_datatype': 'bool', 'idx': 99, 'min': 0.0, 'max': 3931.418212890625},
+   "FT2001PELubeDriveCalculatedFlowrate_ENG": {'alter_datatype': 'char', 'idx': 100, 'min': 0.0, 'max': 6.774921875},
+   "FT1001MainLoopCalculatedFlowrateAI_ENG": {'alter_datatype': 'char', 'idx': 101, 'min': 0.0, 'max': 4.9226568603515},
+   "FT2002PELubeDriveCalculatedFlowrate_ENG": {'alter_datatype': 'bool', 'idx': 102, 'min': 0.0, 'max': 3.187256240844}
 }
-IDX_VARIABLES_FLOAT = {}
-
 
 def authenticate(username, password):
     return username == "user1" and password == "pass123"
@@ -148,130 +147,77 @@ class OPCUAServer:
         self.idx = None
 
         self.tag_hierarchy = {
-  "VFD_CNTRL_TAGS": {
-    "D1001VFDStop": "float",
-    "D1001VFDStopSpeedSetpoint": "float"
-  },
-  "PE_Lube_Tags": {
-    "D2001PELubePumpMtr1Stop": "float",
-    "D2003PELubeCoolerManualSpeedValue": "float",
-    "D2002PELubePumpMtr2ManualSpeedValue": "float"
-  },
-  "Outputs": {
-    "D1001DriveRunCommandDO": "float",
-    "D1001DriveSpeedReferenceAO_ENG": "float",
-    "D1002ChargePumpDriveSpeedReferenceAO_ENG": "float",
-    "D2001PELubePumpDriveSpeedReferenceAO_ENG": "float",
-    "D1002ChargePumpVFDRunCommandDO": "float",
-    "D2001PELubePumpVFDRunCommandDO": "float",
-    "D2002PELubePumpVFDRunCommandDO": "float"
-  },
-  "Inputs": {
-    "CV1001PositionFeedbackAI_ENG": "float",
-    "CV1002PositionFeedbackAI_ENG": "float",
-    "D1001MotorSpeedAI_ENG": "float",
-    "D1001MotorTorqueAI_ENG": "float",
-    "D1002ChargePumpSpeedAI_ENG": "float",
-    "D1002ChargePumpTorqueAI_ENG": "float",
-    "D2001PELubePumpDriveSpeedAI_ENG": "float",
-    "FT1001MainLoopFlowrateAI_ENG": "float",
-    "FT2001PELubeSupplyFlowAI_ENG": "float",
-    "FT2001PELubeSupplyFlowSetpoint_ENG": "float",
-    "LT1001MainWaterTankLevelAI_ENG": "float",
-    "PT1001MaingPumpChargePressAI_ENG": "float",
-    "PT1002MainPumpDischargePressAI_ENG": "float",
-    "PT1003MainPumpDischargePressAI_ENG": "float",
-    "PT1004ChokeCV1002PressAI_ENG": "float",
-    "PT2001PELubeSupplyPressAI_ENG": "float",
-    "PT2001PELubeSupplyPressSetpoint_ENG": "float",
-    "PT2002PELubeSupplyPressAI_ENG": "float",
-    "PT2002PELubeSupplyPressSetpoint_ENG": "float",
-    "TC1001PumpTempSensorAI_ENG": "float",
-    "TC1002PumpTempSensorAI_ENG": "float",
-    "TC1003PumpTempSensorAI_ENG": "float",
-    "TC1004PumpTempSensorAI_ENG": "float",
-    "TC1005PumpTempSensorAI_ENG": "float",
-    "TC1006PumpTempSensorAI_ENG": "float",
-    "TC1007PumpTempSensorAI_ENG": "float",
-    "TC1008PumpTempSensorAI_ENG": "float",
-    "TC1009PumpTempSensorAI_ENG": "float",
-    "TC1010PumpTempSensorAI_ENG": "float",
-    "TC1011PumpTempSensorAI_ENG": "float",
-    "TC1012PumpTempSensorAI_ENG": "float",
-    "TT1001MainWaterTemperatureAI_ENG": "float",
-    "TT2001PELubeTankTempAI_ENG": "float",
-    "TT2002PELubeSupplyTempAI_ENG": "float",
-    "D2002PELubePumpDriveSpeedAI_ENG": "float",
-    "PT2006PELubeSupplyPressSetpointAI_ENG": "float",
-    "PT2006PELubeSupplyPressAI_ENG": "float",
-    "PT2005PELubeSupplyPressAI_ENG": "float",
-    "PT2005PELubeSupplyPressSetpointAI_ENG": "float",
-    "PT2004PELubeSupplyPressAI_ENG": "float",
-    "PT2003PELubeSupplyPressAI_ENG": "float",
-    "FT2002PELubeSupplyFlowAI_ENG": "float",
-    "D1001MotorEff": "float",
-    "D2001PELubePumpDriveEff": "float",
-    "D2002PELubePumpDriveEff": "float",
-    "FT2001PELubeDriveCalculatedFlowrate_ENG": "float",
-    "FT1001MainLoopCalculatedFlowrateAI_ENG": "float",
-    "FT2002PELubeDriveCalculatedFlowrate_ENG": "float"
-  },
-  "CHOKE_TAGS": {
-    "CV1002ChokeValvePositionSetpoint": "float",
-    "CV1002ChokeValveStop": "float",
-    "CV1001ChokeValveStop": "float",
-    "CV1001ChokeValvePositionSetpoint": "float"
-  },
-  "CHARGE_PUMP_TAGS": {
-    "D1002ChargePumpMotorStop": "float"
-  },
-  "ALARM_TAGS": {
-    "FT2001LL_AlarmSetpoint": "float",
-    "LS1001H_AlarmSetpoint": "float",
-    "LS1002H_AlarmSetpoint": "float",
-    "LS1003H_AlarmSetpoint": "float",
-    "LS1004HH_AlarmSetpoint": "float",
-    "LS2001L_AlarmSetpoint": "float",
-    "LT1001L_AlarmSetpoint": "float",
-    "LT1001LL_AlarmSetpoint": "float",
-    "PT1001L_AlarmSetpoint": "float",
-    "PT1001LL_AlarmSetpoint": "float",
-    "PT1002HH_AlarmSetpoint": "float",
-    "PT1003HH_AlarmSetpoint": "float",
-    "PT2001HH_AlarmSetpoint": "float",
-    "PT2002L_AlarmSetpoint": "float",
-    "PT2002LL_AlarmSetpoint": "float",
-    "TT1001H_AlarmSetpoint": "float",
-    "TT1001HH_AlarmSetpoint": "float",
-    "TT2001H_AlarmSetpoint": "float",
-    "TT2001HH_AlarmSetpoint": "float",
-    "FT2001LL_Alarm": "float",
-    "LS1001H_Alarm": "float",
-    "LS1002H_Alarm": "float",
-    "LS1003H_Alarm": "float",
-    "LS1004HH_Alarm": "float",
-    "LS2001L_Alarm": "float",
-    "LT1001L_Alarm": "float",
-    "LT1001LL_Alarm": "float",
-    "PT1001L_Alarm": "float",
-    "PT1001LL_Alarm": "float",
-    "PT1002HH_Alarm": "float",
-    "PT1003HH_Alarm": "float",
-    "PT2001HH_Alarm": "float",
-    "PT2002L_Alarm": "float",
-    "PT2002LL_Alarm": "float",
-    "TT1001H_Alarm": "float",
-    "TT1001HH_Alarm": "float",
-    "TT2001H_Alarm": "float",
-    "TT2001HH_Alarm": "float"
-  }
-}
+            "VFD_CNTRL_TAGS": {
+                'D1001VFDStop': 'double', 'D1001VFDStopSpeedSetpoint': 'double'
+            },
+            "PE_Lube_Tags": {
+                'D2001PELubePumpMtr1Stop': 'double', 'D2003PELubeCoolerManualSpeedValue': 'double',
+                'D2002PELubePumpMtr2ManualSpeedValue': 'double'
+            },
+            "Outputs": {
+                'D1001DriveRunCommandDO': 'double', 'D1001DriveSpeedReferenceAO_ENG': 'double',
+                'D1002ChargePumpDriveSpeedReferenceAO_ENG': 'double', 'D2001PELubePumpDriveSpeedReferenceAO_ENG': 'double',
+                'D1002ChargePumpVFDRunCommandDO': 'double', 'D2001PELubePumpVFDRunCommandDO': 'double',
+                'D2002PELubePumpVFDRunCommandDO': 'double'
+            },
+            "Inputs": {
+                'CV1001PositionFeedbackAI_ENG': 'double', 'CV1002PositionFeedbackAI_ENG': 'double',
+                'D1001MotorSpeedAI_ENG': 'float', 'D1001MotorTorqueAI_ENG': 'float',
+                'D1002ChargePumpSpeedAI_ENG': 'float', 'D1002ChargePumpTorqueAI_ENG': 'double',
+                'D2001PELubePumpDriveSpeedAI_ENG': 'float', 'FT1001MainLoopFlowrateAI_ENG': 'float',
+                'FT2001PELubeSupplyFlowAI_ENG': 'float', 'FT2001PELubeSupplyFlowSetpoint_ENG': 'double',
+                'LT1001MainWaterTankLevelAI_ENG': 'float', 'PT1001MaingPumpChargePressAI_ENG': 'float',
+                'PT1002MainPumpDischargePressAI_ENG': 'float', 'PT1003MainPumpDischargePressAI_ENG': 'float',
+                'PT1004ChokeCV1002PressAI_ENG': 'double', 'PT2001PELubeSupplyPressAI_ENG': 'float',
+                'PT2001PELubeSupplyPressSetpoint_ENG': 'double', 'PT2002PELubeSupplyPressAI_ENG': 'float',
+                'PT2002PELubeSupplyPressSetpoint_ENG': 'double', 'TC1001PumpTempSensorAI_ENG': 'float',
+                'TC1002PumpTempSensorAI_ENG': 'double', 'TC1003PumpTempSensorAI_ENG': 'float',
+                'TC1004PumpTempSensorAI_ENG': 'float', 'TC1005PumpTempSensorAI_ENG': 'float',
+                'TC1006PumpTempSensorAI_ENG': 'float', 'TC1007PumpTempSensorAI_ENG': 'float',
+                'TC1008PumpTempSensorAI_ENG': 'float', 'TC1009PumpTempSensorAI_ENG': 'float',
+                'TC1010PumpTempSensorAI_ENG': 'float', 'TC1011PumpTempSensorAI_ENG': 'float',
+                'TC1012PumpTempSensorAI_ENG': 'float', 'TT1001MainWaterTemperatureAI_ENG': 'float',
+                'TT2001PELubeTankTempAI_ENG': 'float', 'TT2002PELubeSupplyTempAI_ENG': 'float',
+                'D2002PELubePumpDriveSpeedAI_ENG': 'float', 'PT2006PELubeSupplyPressSetpointAI_ENG': 'double',
+                'PT2006PELubeSupplyPressAI_ENG': 'float', 'PT2005PELubeSupplyPressAI_ENG': 'float',
+                'PT2005PELubeSupplyPressSetpointAI_ENG': 'double', 'PT2004PELubeSupplyPressAI_ENG': 'float',
+                'PT2003PELubeSupplyPressAI_ENG': 'float', 'FT2002PELubeSupplyFlowAI_ENG': 'float',
+                'D1001MotorEff': 'double', 'D2001PELubePumpDriveEff': 'float', 'D2002PELubePumpDriveEff': 'float',
+                'FT2001PELubeDriveCalculatedFlowrate_ENG': 'float', 'FT1001MainLoopCalculatedFlowrateAI_ENG': 'float',
+                'FT2002PELubeDriveCalculatedFlowrate_ENG': 'float'
+            },
+            "CHOKE_TAGS": {
+                'CV1002ChokeValvePositionSetpoint': 'double', 'CV1002ChokeValveStop': 'double',
+                'CV1001ChokeValveStop': 'double', 'CV1001ChokeValvePositionSetpoint': 'double'
+            },
+            "CHARGE_PUMP_TAGS": {
+                'D1002ChargePumpMotorStop': 'double'
+            },
+            "ALARM_TAGS": {
+                'FT2001LL_AlarmSetpoint': 'double', 'LS1001H_AlarmSetpoint': 'double',
+                'LS1002H_AlarmSetpoint': 'double', 'LS1003H_AlarmSetpoint': 'double',
+                'LS1004HH_AlarmSetpoint': 'double', 'LS2001L_AlarmSetpoint': 'double',
+                'LT1001L_AlarmSetpoint': 'double', 'LT1001LL_AlarmSetpoint': 'double',
+                'PT1001L_AlarmSetpoint': 'double', 'PT1001LL_AlarmSetpoint': 'double',
+                'PT1002HH_AlarmSetpoint': 'double', 'PT1003HH_AlarmSetpoint': 'double',
+                'PT2001HH_AlarmSetpoint': 'double', 'PT2002L_AlarmSetpoint': 'double',
+                'PT2002LL_AlarmSetpoint': 'double', 'TT1001H_AlarmSetpoint': 'double',
+                'TT1001HH_AlarmSetpoint': 'double', 'TT2001H_AlarmSetpoint': 'double',
+                'TT2001HH_AlarmSetpoint': 'double', 'FT2001LL_Alarm': 'double',
+                'LS1001H_Alarm': 'double', 'LS1002H_Alarm': 'double', 'LS1003H_Alarm': 'double',
+                'LS1004HH_Alarm': 'double', 'LS2001L_Alarm': 'double', 'LT1001L_Alarm': 'double',
+                'LT1001LL_Alarm': 'double', 'PT1001L_Alarm': 'double', 'PT1001LL_Alarm': 'double',
+                'PT1002HH_Alarm': 'double', 'PT1003HH_Alarm': 'double', 'PT2001HH_Alarm': 'double',
+                'PT2002L_Alarm': 'double', 'PT2002LL_Alarm': 'double', 'TT1001H_Alarm': 'double',
+                'TT1001HH_Alarm': 'double', 'TT2001H_Alarm': 'double', 'TT2001HH_Alarm': 'double'
+            }
+        }
 
         if is_advanced is True:
             for tag in self.tag_hierarchy:
                 for index in self.tag_hierarchy[tag]:
                     if index in IDX_VARIABLES:
-                        self.tag_hierarchy[tag][index] = IDX_VARIABLES[index]
+                        self.tag_hierarchy[tag][index] = IDX_VARIABLES[index]['alter_datatype']
 
     def setup_server(self, enable_auth:bool=False, string_mode:str='int'):
         self.server.set_endpoint(self.endpoint)
@@ -328,13 +274,12 @@ class OPCUAServer:
 
     def build_nodeid(self, name, parent_path="", string_mode:str='int'):
         full_name = name
-
         if string_mode == 'int' and full_name in IDX_OBJECTS:
             full_name = IDX_OBJECTS.index(full_name) + 1000
         elif string_mode == 'int' and full_name in list(IDX_VARIABLES.keys()):
-            full_name = list(IDX_VARIABLES.keys()).index(full_name) + 2001
+            full_name = IDX_VARIABLES[full_name]['idx'] + 2001
             if len(IDX_OBJECTS) >= 2000:
-                full_name = list(IDX_VARIABLES.keys()).index(full_name) + 2001 + len(IDX_OBJECTS)
+                full_name = IDX_VARIABLES[full_name]['idx'] + 2001 + len(IDX_OBJECTS)
         elif string_mode == 'int':
             raise ValueError(f'Missing {name} form both objects and variables list(s)')
         elif string_mode == 'long':
@@ -346,7 +291,7 @@ class OPCUAServer:
     def add_variables(self, parent_obj, tag_dict, parent_path="", string_mode:str='int'):
         tag_var_dict = {}
         for tag, vtype in tag_dict.items():
-            default_value = self.get_default_value(vtype)
+            default_value = {"int": 0, "float": 0.0, "bool": False, "char": ""}.get(vtype, None)
             nodeid = self.build_nodeid(tag, parent_path=parent_path, string_mode=string_mode)
             var = parent_obj.add_variable(nodeid, tag, default_value)
             tag_var_dict[tag] = (var, vtype)
@@ -373,13 +318,11 @@ class OPCUAServer:
         self.server.start()
         print(f"Server is running at {self.server.endpoint}")
 
-    def get_default_value(self, vtype):
-        return {"int": 0, "float": 0.0, "bool": False, "char": ""}.get(vtype, None)
-
-    def get_random_value(self, vtype):
+    def get_random_value(self, vtype, min_val, max_val):
         return {
-            "int": random.randint(0, 1000),
-            "float": round(random.uniform(0, 100.0), 2),
+            "int": random.randint(min_val, max_val),
+            "double": round(random.uniform(min_val, max_val), 2),
+            "float": random.uniform(min_val, max_val),
             "bool": random.choice([True, False]),
             "char": random.choice(string.ascii_uppercase)
         }.get(vtype, None)
@@ -390,7 +333,9 @@ class OPCUAServer:
                 time.sleep(1)
                 for tag_vars in tag_group_var_dicts.values():
                     for var, vtype in tag_vars.values():
-                        new_val = self.get_random_value(vtype)
+                        min_val = IDX_VARIABLES[list(tag_vars.keys())[0]]['min']
+                        max_val = IDX_VARIABLES[list(tag_vars.keys())[0]]['max']
+                        new_val = self.get_random_value(vtype, min_val, max_val)
                         var.set_value(new_val)
         except KeyboardInterrupt:
             print("Server stopped by user.")
