@@ -11,7 +11,12 @@ The simulator can be run via Docker. Environment Options are
 * `GET_HELP` - print help information 
 
 ```shell
-docker run -d -p 4840:4840 --detach-keys=ctrl-d --name opcua-simulator --rm oshadmon/opcua-simulator
+docker run -d -p 4840:4840 \
+  -e OPCUA_CONN=0.0.0.0:4840 \
+  -e STRING_MODE=short \
+  --e ADVANCED_CONFIGS=false \
+  -e GET_HELP=false \
+--detach-keys=ctrl-d --name opcua-simulator --rm oshadmon/opcua-simulator
 ```
 
 ## Deployment
