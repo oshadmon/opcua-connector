@@ -3,6 +3,17 @@ The following provides a OPC-UA server for testing purposses.
 
 ![OPCUA Architecture](opcua_architecture.png)
 
+## Run via Docker
+The simulator can be run via Docker. Environment Options are 
+* `OPCUA_CONN` - IP:Port to connect allow for connecting to the OPC-UA (default: `0.0.0.0:4840`)
+* `STRING_MODE` - Indexing format (_short_, _int_, _long_) 
+* `ADVANCED_CCNFIGS` - set OPC-UA Tags to return different data types 
+* `GET_HELP` - print help information 
+
+```shell
+docker run -d -p 4840:4840 --detach-keys=ctrl-d --name opcua-simulator --rm oshadmon/opcua-simulator
+```
+
 ## Deployment
 1. Install python3 with pip and OPCUA package
 ```shell
