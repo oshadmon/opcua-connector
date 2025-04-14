@@ -37,6 +37,22 @@ The simulator can be run using Docker. Set the following environment variables t
 | `ADVANCED_OPCUA`| Enable support for multiple data types                                    | `false`        |
 | `GET_HELP`      | Show command-line help and exit                                           | `false`        |
 
+
+When deploying an OPC-UA server with a `VALUE_CHANGE` parameter, the system begins by generating an initial random 
+floating-point number between 10 and 1000. This number becomes the _base value_ for each variable.
+
+For each update cycle, a new value is generated within a percentage range of this base value. The range is calculated as:
+```
+new_value ∈ [base_value × (1 - VALUE_CHANGE), base_value × (1 + VALUE_CHANGE)]
+```
+
+For example, if the current base value is 25.314 and VALUE_CHANGE is 0.05, the next value will be randomly selected 
+between - **min**: `25.314 × 0.95 = 24.0483` and **max**: `25.314 × 1.05 = 26.5797`. 
+
+The optional flag `UPDATE_BASE`, when set to **True**, updates the base value to the newly generated value after each 
+change. This causes future values to evolve relative to the latest one, allowing the variable to "drift" over time rather 
+than fluctuate around a fixed starting point.
+
 ### Docker Example
 
 ```bash
