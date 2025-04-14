@@ -1,43 +1,13 @@
-# OPC-UA Server 
-The following provides a OPC-UA server for testing purposses. 
+# OPC-UA Server
+
+This repository provides an OPC-UA server simulator for testing and development purposes.
 
 ![OPCUA Architecture](opcua_architecture.png)
 
-## Run via Docker
-The simulator can be run via Docker. Environment Options are 
-* `OPCUA_CONN` - IP:Port to connect allow for connecting to the OPC-UA (default: `0.0.0.0:4840`)
-* `STRING_MODE` - Indexing format (_short_, _int_, _long_) 
-* `ADVANCED_CCNFIGS` - set OPC-UA Tags to return different data types 
-* `GET_HELP` - print help information 
+### Data Structure
+The server exposes 103 data points, structured under the DeviceSet node, rotating between types such as int, float, boolean, and char.
 
-```shell
-docker run -d -p 4840:4840 \
-  -e OPCUA_CONN=0.0.0.0:4840 \
-  -e STRING_MODE=short \
-  --e ADVANCED_CONFIGS=false \
-  -e GET_HELP=false \
---detach-keys=ctrl-d --name opcua-simulator --rm oshadmon/opcua-simulator
-```
-
-## Deployment
-1. Install python3 with pip and OPCUA package
-```shell
-python3  -m pip install --upgrade pip 
-python3  -m pip install --upgrade opcua>=0.0
-```
-
-2. Start OPC-UA service
-    * When setting `--advanced-opuca` the tags would generate a data type of either _int_, _float_, _char_ or _string_. 
-    While without `--advanced-opuca` data is of type _float_.
-    * When using authentication, the authentication type is `ua.SecurityPolicyType.Basic256Sha256_SignAndEncrypt`  - **user**: root | **password**: demo
-
-```shell
-python3 server.py [--opcua-conn 127.0.0.1:4840] [--string-mode {int, short, long}] [--enable-auth] [--advanced-opcua]
-```
-
-## Data Structure
-The Server has 103 data points, that rotate between _int_, _float_, _boolean_ and _char_ 
-```tree
+```lua
 |- ns=2;s=DeviceSet
 |-- ns=2;s=WAGO 750-8210 PFC200 G2 4ETH XTR
 |--- ns=2;s=Resources
@@ -51,42 +21,85 @@ The Server has 103 data points, that rotate between _int_, _float_, _boolean_ an
 |------- ns=2;s=D1002ChargePumpMotorStop
 ```
 
-* View data based on idx as a long string
-```shell 
-/Users/orishadmon/opcua-connector/server.py --string long
+---
 
-# sample AnyLog/EdgeLake call + output
-AL > get opcua values where url=opc.tcp://127.0.0.1:4840/freeopcua/server and node="ns=2;s=DeviceSet.WAGO 750-8210 PFC200 G2 4ETH XTR.Resources.Application.GlobalVars.ALARM_TAGS.FT2001LL_AlarmSetpoint" and include=all
-OPCUA Nodes values
-id                                                                                                   name                   source_timestamp           server_timestamp status_code value 
-----------------------------------------------------------------------------------------------------|----------------------|--------------------------|----------------|-----------|-----|
-ns=2;s=DeviceSet.WAGO 750-8210 PFC200 G2 4ETH XTR.Resources.Application.GlobalVars.ALARM_TAGS.FT2001|
-LL_AlarmSetpoint                                                                                    |ft2001ll_alarmsetpoint|2025-04-05 03:13:07.003524|                |Good       |  105|
+## Run via Docker
+
+The simulator can be run using Docker. Set the following environment variables to configure the server:
+
+| Variable        | Description                                                               | Default        |
+|----------------|---------------------------------------------------------------------------|----------------|
+| `OPCUA_CONN`    | IP:Port for the OPC-UA server                                              | `0.0.0.0:4840` |
+| `STRING_MODE`   | NodeId indexing format: `int`, `short`, or `long`                         | `short`        |
+| `CHANGE_RATE`   | Frequency of value updates (in seconds)                                   | `1`            |
+| `VALUE_CHANGE`  | Rate of numeric value change (as a float)                                 | `None`         |
+| `UPDATE_BASE`   | If true, updates the base value during value change                       | `false`        |
+| `ADVANCED_OPCUA`| Enable support for multiple data types                                    | `false`        |
+| `GET_HELP`      | Show command-line help and exit                                           | `false`        |
+
+### Docker Example
+
+```bash
+docker run -d -p 4840:4840 \
+  -e OPCUA_CONN=0.0.0.0:4840 \
+  -e STRING_MODE=short \
+  -e CHANGE_RATE=1 \
+  -e VALUE_CHANGE=0.05 \
+  -e UPDATE_BASE=true \
+  -e ENABLE_AUTH=true \
+  -e ADVANCED_OPCUA=true \
+  -e GET_HELP=false \
+  --detach-keys=ctrl-d --name opcua-simulator --rm oshadmon/opcua-simulator
 ```
 
-* View data based on idx as a short string
+## Local Deployment
+1. Install dependencies
 ```shell
-/Users/orishadmon/opcua-connector/server.py --string short
-
-# sample AnyLog/EdgeLake call + output
-AL > get opcua values where url=opc.tcp://10.0.0.78:4840/freeopcua/server and node="ns=2;s=FT2001LL_AlarmSetpoint" and include=all
-
-OPCUA Nodes values
-id                            name                   source_timestamp           server_timestamp status_code value 
------------------------------|----------------------|--------------------------|----------------|-----------|-----|
-ns=2;s=FT2001LL_AlarmSetpoint|ft2001ll_alarmsetpoint|2025-04-05 03:15:01.819446|                |Good       |  919|
+python3 -m pip install --upgrade pip
+python3 -m pip install opcua>=0.0
 ```
 
-* View data based on idx as an integer
+2. Start the OPC-UA server
 ```shell
-/Users/orishadmon/opcua-connector/server.py --string int 
-
-
-# sample AnyLog/EdgeLake call + output
-AL > get opcua values where url=opc.tcp://127.0.0.1:4840/freeopcua/server and node="ns=2;i=2017" and include=all
-
-OPCUA Nodes values
-id           name                   source_timestamp           server_timestamp status_code value 
-------------|----------------------|--------------------------|----------------|-----------|-----|
-ns=2;i=2017 |ft2001ll_alarmsetpoint|2025-04-05 03:31:08.329521|                |Good       |  671|
+python3 server.py \
+  [--opcua-conn 127.0.0.1:4840] \
+  [--string-mode {int, short, long}] \
+  [--change-rate 1.0] \
+  [--value-change 0.05] \
+  [--update-base] \
+  [--advanced-opcua]
 ```
+When --advanced-opcua is used, tag values may be of type int, float, char, or string.  Without it, all values are floats / double.
+
+--- 
+
+## Accessing Data by Index Format
+
+* Long format -- `python3 server.py --string-mode long`
+```anylog
+# Sample Query
+<set opcua values where 
+    url=opc.tcp://127.0.0.1:4840/freeopcua/server and
+    node="ns=2;s=DeviceSet.WAGO 750-8210 PFC200 G2 4ETH XTR.Resources.Application.GlobalVars.ALARM_TAGS.FT2001LL_AlarmSetpoint" and 
+    include=all>
+```
+
+* Short form -- `python3 server.py --string-mode short`
+```anylog
+# Sample Query
+<set opcua values where 
+    url=opc.tcp://127.0.0.1:4840/freeopcua/server and
+    node="ns=2;s=FT2001LL_AlarmSetpoint" and 
+    include=all>
+```
+
+* Int form -- `python3 server.py --string-mode int`
+```anylog
+# Sample Query
+<set opcua values where 
+    url=opc.tcp://127.0.0.1:4840/freeopcua/server and
+    node="ns=2;i=2017" and 
+    include=all>
+```
+ 
+
