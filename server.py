@@ -334,27 +334,38 @@ class OPCUAServer:
             ua.VariantType.String: random.choice(string.ascii_uppercase)
         }.get(vtype, None)
 
-    def update_variable_values(self, tag_group_var_dicts, change_rate:float=1, value_change:float=None, update_base:bool=False):
+    def update_variable_values(self, tag_group_var_dicts, change_rate: float = 1, value_change: float = None,
+                               update_base: bool = False):
         try:
+            target_period = change_rate  # seconds per update (change_rate = 1 / Hz)
+            next_update = time.perf_counter()
             while True:
-                time.sleep(change_rate)
-                for tag_vars in tag_group_var_dicts.values():
-                    for var, vtype in tag_vars.values():
-                        min_val = IDX_VARIABLES[list(tag_vars.keys())[0]]['min']
-                        max_val = IDX_VARIABLES[list(tag_vars.keys())[0]]['max']
-                        if value_change is not None and (isinstance(value_change, int) or isinstance(value_change, float)):
-                            min_val = IDX_VARIABLES[list(tag_vars.keys())[0]]['base_value'] * (1-value_change)
-                            max_val = IDX_VARIABLES[list(tag_vars.keys())[0]]['base_value'] * (1+value_change)
-                        new_val = self.get_random_value(vtype, min_val, max_val)
-                        if value_change is not None and (isinstance(value_change, int) or isinstance(value_change, float)) and update_base is True:
-                            IDX_VARIABLES[list(tag_vars.keys())[0]]['base_value'] = new_val
-                        # if list(tag_vars.keys())[0] == 'D1001VFDStop':
-                        #     print(IDX_VARIABLES[list(tag_vars.keys())[0]]['base_value'] , new_val)
-                        var.set_value(new_val)
+                now = time.perf_counter()
+                if now >= next_update:
+                    for tag_vars in tag_group_var_dicts.values():
+                        for tag_name, (var, vtype) in tag_vars.items():
+                            var_config = IDX_VARIABLES.get(tag_name, {})
+                            min_val = var_config.get('min', 0.0)
+                            max_val = var_config.get('max', 1.0)
+                            base_val = var_config.get('base_value', 1.0)
+                            if value_change is not None and isinstance(value_change, (int, float)):
+                                min_val = base_val * (1 - value_change)
+                                max_val = base_val * (1 + value_change)
+                            new_val = self.get_random_value(vtype, min_val, max_val)
+                            if value_change is not None and update_base:
+                                IDX_VARIABLES[tag_name]['base_value'] = new_val
+                            var.set_value(new_val)
+
+                    next_update += target_period
+                else:
+                    # Sleep only for the remaining time to keep precise frequency
+                    sleep_time = max(0, next_update - time.perf_counter())
+                    time.sleep(sleep_time)
         except KeyboardInterrupt:
             print("Server stopped by user.")
         finally:
             self.server.stop()
+
 
     def run(self, enable_auth=False, string_mode:str='short', change_rate:float=1, value_change:float=None, update_base:bool=False):
         global_vars = self.setup_server(enable_auth=enable_auth, string_mode=string_mode)
@@ -372,20 +383,20 @@ if __name__ == "__main__":
         --string-mode       String NodeId mode
             * int   --          ns=2;s=FT2001LL_AlarmSetpoint
             * short --          ns=2;s=FT2001LL_AlarmSetpoint
-            * long  --          ns=2;s=DeviceSet.WAGO 750-8210 PFC200 G2 4ETH XTR.Resources.Application.GlobalVars.ALARM_TAGS.FT2001LL_AlarmSetpoint
+            * long  --          ns=2;s=DeviceSet.WAGO 750-8210 PFC200 G2 4ETH XTR.Resources.Application.GlobalVars .ALARM_TAGS.FT2001LL_AlarmSetpoint
         --enable-auth       Enable authentication
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('--opcua-conn', type=str, default='127.0.0.1:4840', help="OPC-UA connection IP + Port")
     parser.add_argument('--string-mode', choices=['int', 'short', 'long'], default='short', help='String NodeId mode')
-    parser.add_argument('--change-rate', type=float, default=1, help='Frequency of how often to change the value (seconds)')
+    parser.add_argument('--change-rate', type=float, default=1, help='Frequency of how often to change the value in Hertz')
     parser.add_argument('--value-change', type=float, default=None, help='numeric value(s) change rate ({value} * 1-{value_rate}) <= {value} <=  {value} * 1+{value_rate}')
     parser.add_argument('--update-base', type=bool, nargs='?', const=True, default=False, help='when using `--value-change`, update base value')
     parser.add_argument('--enable-auth', type=bool, nargs='?', const=True, default=False, help='Enable authentication')
     parser.add_argument('--advanced-opcua', type=bool, nargs='?', const=True, default=False, help='Multiple data types, as opposed to only float values')
     args = parser.parse_args()
 
-    args.change_rate =  abs(args.change_rate)
+    args.change_rate =  round(float(1/abs(args.change_rate)),5) if args.change_rate > 0 else 1.0
     if args.value_change is not None:
         args.value_change = abs(args.value_change/100) if args.value_change > 1 else abs(args.value_change)
 

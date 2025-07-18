@@ -8,7 +8,8 @@ ENV OPCUA_CONN=0.0.0.0:4840 \
 WORKDIR /app
 
 # copy server.sh + server.py
-COPY server.py server.sh .
+COPY server.py server.py
+COPY server.sh server.sh
 
 RUN apt-get -y update && apt-get -y upgrade && \
     apt-get -y install python3-pip && \
