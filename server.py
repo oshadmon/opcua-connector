@@ -2,10 +2,13 @@ import argparse
 import random
 import string
 import time
-
 from opcua import Server, ua
 from opcua.server.user_manager import UserManager
 from opcua.tools import parse_args
+import multiprocessing
+
+
+from server_working import OPCUAServer
 
 # Static NodeIds for Objects (folders/nodes)
 IDX_OBJECTS = [
@@ -31,6 +34,7 @@ double 10
 char 26
 bool 27
 """
+
 IDX_VARIABLES = {
    "D1001VFDStop": {'alter_datatype': ua.VariantType.Float, 'idx': 0, 'min': 0.0, 'max': 1.0, 'base_value': round(random.uniform(10, 100), 2)},
    "D1001VFDStopSpeedSetpoint": {'alter_datatype': ua.VariantType.Double, 'idx': 1, 'min': 0.0, 'max': 50.0, 'base_value': round(random.uniform(10, 100), 2)},
@@ -140,12 +144,26 @@ IDX_VARIABLES = {
 def authenticate(username, password):
     return username == "user1" and password == "pass123"
 
+def run_variable_updater(server:OPCUAServer, tag_groups, change_rate, value_change, update_base):
+    server.update_variable_values(tag_groups, change_rate, value_change, update_base)
+
+
+def _run_variable_updater(server_args):
+    # Avoid circular pickling errors by rebuilding the server partially inside the child process
+    endpoint, tag_group_dict, change_rate, value_change, update_base, string_mode, is_advanced = server_args
+
+    server = OPCUAServer(endpoint=endpoint, is_advanced=is_advanced)
+    server._server = server.setup_server()
+    # Only assign tag_group_dict into existing namespaces (assumes setup already called)
+    server.update_variable_values(tag_group_dict, change_rate, value_change, update_base)
+
 
 class OPCUAServer:
-    def __init__(self, endpoint="127.0.0.1:4840", is_advanced:bool=False):
+    def __init__(self, endpoint="127.0.0.1:4840", is_advanced: bool = False):
         self.server = Server()
         self.endpoint = f"opc.tcp://{endpoint}/freeopcua/server/"
         self.idx = None
+        self.is_advanced = is_advanced
 
         self.tag_hierarchy = {
             "VFD_CNTRL_TAGS": {
@@ -214,13 +232,13 @@ class OPCUAServer:
             }
         }
 
-        if is_advanced is True:
-            for tag in self.tag_hierarchy:
-                for index in self.tag_hierarchy[tag]:
-                    if index in IDX_VARIABLES:
-                        self.tag_hierarchy[tag][index] = IDX_VARIABLES[index]['alter_datatype']
+        if self.is_advanced:
+            for tag_group in self.tag_hierarchy:
+                for tag_name in self.tag_hierarchy[tag_group]:
+                    if tag_name in IDX_VARIABLES:
+                        self.tag_hierarchy[tag_group][tag_name] = IDX_VARIABLES[tag_name]['alter_datatype']
 
-    def setup_server(self, enable_auth:bool=False, string_mode:str=ua.VariantType.Int32):
+    def setup_server(self, enable_auth: bool = False, string_mode: str = 'short'):
         self.server.set_endpoint(self.endpoint)
         self.server.set_server_name("OPC-UA Server")
         self.idx = self.server.register_namespace("http://example.org")
@@ -228,44 +246,42 @@ class OPCUAServer:
         if enable_auth:
             self.server.set_security_policy([ua.SecurityPolicyType.Basic256Sha256_SignAndEncrypt])
             self.setup_authentication()
-        # else:
-        #     self.server.set_security_policy(ua.SecurityPolicyType.NoSecurity)
 
         objects = self.server.get_objects_node()
         device_set = objects.add_object(
             self.build_nodeid("DeviceSet", string_mode=string_mode),
-            "DeviceSet")
+            "DeviceSet"
+        )
 
         wago = device_set.add_object(
             self.build_nodeid("WAGO 750-8210 PFC200 G2 4ETH XTR", parent_path="DeviceSet", string_mode=string_mode),
-            "WAGO 750-8210 PFC200 G2 4ETH XTR")
+            "WAGO 750-8210 PFC200 G2 4ETH XTR"
+        )
 
         resources = wago.add_object(
             self.build_nodeid("Resources", parent_path="DeviceSet.WAGO 750-8210 PFC200 G2 4ETH XTR", string_mode=string_mode),
-            "Resources")
+            "Resources"
+        )
 
         application = resources.add_object(
             self.build_nodeid("Application", parent_path="DeviceSet.WAGO 750-8210 PFC200 G2 4ETH XTR.Resources", string_mode=string_mode),
-            "Application")
+            "Application"
+        )
 
         global_vars = application.add_object(
             self.build_nodeid("GlobalVars", parent_path="DeviceSet.WAGO 750-8210 PFC200 G2 4ETH XTR.Resources.Application", string_mode=string_mode),
-            "GlobalVars")
+            "GlobalVars"
+        )
 
         return global_vars
 
     def setup_authentication(self):
-        """Configure user authentication."""
-        # Usernames and passwords can be stored securely or loaded from a database.
         self.valid_users = {
             "root": "demo"
         }
-
-        # Here we define the authentication callback function
         self.server.user_manager.authenticate = self.authenticate_user
 
     def authenticate_user(self, username, password):
-        """Authenticate user based on username and password."""
         if username in self.valid_users and self.valid_users[username] == password:
             print(f"User '{username}' authenticated successfully.")
             return True
@@ -273,22 +289,28 @@ class OPCUAServer:
             print(f"Authentication failed for user '{username}'.")
             return False
 
-    def build_nodeid(self, name, parent_path="", string_mode:str=ua.VariantType.Int32):
-        full_name = name
-        if string_mode == 'int' and full_name in IDX_OBJECTS:
-            full_name = IDX_OBJECTS.index(full_name) + 1000
-        elif string_mode == 'int' and full_name in list(IDX_VARIABLES.keys()):
-            full_name = IDX_VARIABLES[full_name]['idx'] + 2001
-            if len(IDX_OBJECTS) >= 2000:
-                full_name = IDX_VARIABLES[full_name]['idx'] + 2001 + len(IDX_OBJECTS)
-        elif string_mode == 'int':
-            raise ValueError(f'Missing {name} form both objects and variables list(s)')
+    def build_nodeid(self, name, parent_path="", string_mode='short'):
+        # string_mode can be 'int', 'short', or 'long'
+        if string_mode == 'int':
+            if name in IDX_OBJECTS:
+                node_id_value = IDX_OBJECTS.index(name) + 1000
+            elif name in IDX_VARIABLES:
+                node_id_value = IDX_VARIABLES[name]['idx'] + 2001
+                if len(IDX_OBJECTS) >= 2000:
+                    node_id_value += len(IDX_OBJECTS)
+            else:
+                raise ValueError(f"Missing {name} from both objects and variables list(s)")
+            return ua.NodeId(node_id_value, self.idx)
+        elif string_mode == 'short':
+            # Use string name as is
+            return ua.NodeId(name, self.idx)
         elif string_mode == 'long':
             full_name = f"{parent_path}.{name}" if parent_path else name
+            return ua.NodeId(full_name, self.idx)
+        else:
+            raise ValueError(f"Unknown string_mode '{string_mode}'")
 
-        return ua.NodeId(full_name, self.idx)
-
-    def add_variables(self, parent_obj, tag_dict, parent_path="", string_mode: str = ua.VariantType.Int32):
+    def add_variables(self, parent_obj, tag_dict, parent_path="", string_mode='short'):
         tag_var_dict = {}
         for tag, vtype in tag_dict.items():
             default_value = {
@@ -303,8 +325,7 @@ class OPCUAServer:
             tag_var_dict[tag] = (var, vtype)
         return tag_var_dict
 
-
-    def create_tag_group_objects(self, global_vars, string_mode:str=ua.VariantType.Int32):
+    def create_tag_group_objects(self, global_vars, string_mode='short'):
         tag_group_var_dicts = {}
         base_path = "DeviceSet.WAGO 750-8210 PFC200 G2 4ETH XTR.Resources.Application.GlobalVars"
 
@@ -323,82 +344,118 @@ class OPCUAServer:
 
     def start_server(self):
         self.server.start()
-        print(f"Server is running at {self.server.endpoint}")
+        print(f"Server is running at {self.endpoint}")
 
     def get_random_value(self, vtype, min_val, max_val, base_value=None):
         return {
             ua.VariantType.Int32: int(random.uniform(min_val, max_val)),
             ua.VariantType.Double: round(random.uniform(min_val, max_val), 2),
             ua.VariantType.Float: random.uniform(min_val, max_val),
-            ua.VariantType.Boolean: random.choice([True, False]),
-            ua.VariantType.String: random.choice(string.ascii_uppercase)
-        }.get(vtype, None)
+            ua.VariantType.Boolean: bool(random.getrandbits(1)),
+            ua.VariantType.String: ''.join(random.choices(string.ascii_letters + string.digits, k=10))
+        }.get(vtype, base_value)
 
-    def update_variable_values(self, tag_group_var_dicts, change_rate: float = 1, value_change: float = None,
-                               update_base: bool = False):
-        try:
-            target_period = change_rate  # seconds per update (change_rate = 1 / Hz)
-            next_update = time.perf_counter()
-            while True:
-                now = time.perf_counter()
-                if now >= next_update:
-                    for tag_vars in tag_group_var_dicts.values():
-                        for tag_name, (var, vtype) in tag_vars.items():
-                            var_config = IDX_VARIABLES.get(tag_name, {})
-                            min_val = var_config.get('min', 0.0)
-                            max_val = var_config.get('max', 1.0)
-                            base_val = var_config.get('base_value', 1.0)
-                            if value_change is not None and isinstance(value_change, (int, float)):
-                                min_val = base_val * (1 - value_change)
-                                max_val = base_val * (1 + value_change)
-                            new_val = self.get_random_value(vtype, min_val, max_val)
-                            if value_change is not None and update_base:
-                                IDX_VARIABLES[tag_name]['base_value'] = new_val
+    def update_variable_values(self, tag_group_var_dicts, change_rate, value_change, update_base):
+        last_update_time = time.time()
+        while True:
+            current_time = time.time()
+            if current_time - last_update_time >= change_rate:
+                last_update_time = current_time
+                for tag_group, tag_vars in tag_group_var_dicts.items():
+                    for tag, (var, vtype) in tag_vars.items():
+                        base_value = IDX_VARIABLES.get(tag, {}).get('base_value', None)
+                        min_val = IDX_VARIABLES.get(tag, {}).get('min', 0.0)
+                        max_val = IDX_VARIABLES.get(tag, {}).get('max', 1.0)
+                        if update_base and base_value is not None:
+                            base_value += value_change
+                            # Clamp value inside range
+                            base_value = max(min_val, min(base_value, max_val))
+                            IDX_VARIABLES[tag]['base_value'] = base_value
+                            var.set_value(base_value)
+                        else:
+                            # Random fluctuation around base value
+                            new_val = base_value + random.uniform(-value_change, value_change) if base_value else self.get_random_value(vtype, min_val, max_val)
+                            # Clamp if numeric
+                            if isinstance(new_val, (float, int)):
+                                new_val = max(min_val, min(new_val, max_val))
                             var.set_value(new_val)
+            time.sleep(0.01)
+    # ✅ ADD THIS to your OPCUAServer class
+    def run_multiprocess(self, num_workers=4, **kwargs):
+        global_vars = self.setup_server(
+            enable_auth=kwargs.get("enable_auth", False),
+            string_mode=kwargs.get("string_mode", 'short')
+        )
+        tag_group_var_dicts = self.create_tag_group_objects(global_vars, string_mode=kwargs.get("string_mode", 'short'))
+        self.set_variables_writable(tag_group_var_dicts)
+        self.start_server()
 
-                    next_update += target_period
-                else:
-                    # Sleep only for the remaining time to keep precise frequency
-                    sleep_time = max(0, next_update - time.perf_counter())
-                    time.sleep(sleep_time)
+        tag_group_items = list(tag_group_var_dicts.items())
+        chunk_size = (len(tag_group_items) + num_workers - 1) // num_workers
+        processes = []
+
+        for i in range(num_workers):
+            chunk_dict = dict(tag_group_items[i * chunk_size:(i + 1) * chunk_size])
+            if not chunk_dict:
+                continue
+            p = multiprocessing.Process(
+                target=self.update_variable_values,
+                args=(chunk_dict, kwargs.get("change_rate", 1), kwargs.get("value_change", None),
+                      kwargs.get("update_base", False))
+            )
+            p.start()
+            processes.append(p)
+
+        try:
+            for p in processes:
+                p.join()
         except KeyboardInterrupt:
-            print("Server stopped by user.")
-        finally:
+            print("Stopping server and worker processes...")
+            for p in processes:
+                p.terminate()
             self.server.stop()
 
 
-    def run(self, enable_auth=False, string_mode:str='short', change_rate:float=1, value_change:float=None, update_base:bool=False):
-        global_vars = self.setup_server(enable_auth=enable_auth, string_mode=string_mode)
-        tag_group_var_dicts = self.create_tag_group_objects(global_vars, string_mode=string_mode)
-        self.set_variables_writable(tag_group_var_dicts)
-        self.start_server()
-        self.update_variable_values(tag_group_var_dicts, change_rate=change_rate, value_change=value_change, update_base=update_base)
 
+# ✅ UPDATED MAIN ENTRY POINT
 if __name__ == "__main__":
     """
     Sample server for OPC-UA
-    :optonal arguments: 
-        -h, --help          show this help message and exit
-        --opcua-conn        OPC-UA connection IP + Port
-        --string-mode       String NodeId mode
-            * int   --          ns=2;s=FT2001LL_AlarmSetpoint
-            * short --          ns=2;s=FT2001LL_AlarmSetpoint
-            * long  --          ns=2;s=DeviceSet.WAGO 750-8210 PFC200 G2 4ETH XTR.Resources.Application.GlobalVars .ALARM_TAGS.FT2001LL_AlarmSetpoint
-        --enable-auth       Enable authentication
+
+    Optional arguments:
+        -h, --help              Show this help message and exit
+        --opcua-conn            OPC-UA connection IP + Port
+        --string-mode           NodeId mode: int / short / long
+        --change-rate           Frequency (Hz) to change values
+        --value-change          Change rate percentage (e.g. 5 for ±5%)
+        --update-base           Whether to update base value
+        --enable-auth           Enable authentication
+        --advanced-opcua        Use multiple data types
+        --num-workers           Number of parallel variable updater processes
     """
+    multiprocessing.freeze_support()  # safe for Windows
     parser = argparse.ArgumentParser()
     parser.add_argument('--opcua-conn', type=str, default='127.0.0.1:4840', help="OPC-UA connection IP + Port")
     parser.add_argument('--string-mode', choices=['int', 'short', 'long'], default='short', help='String NodeId mode')
-    parser.add_argument('--change-rate', type=float, default=1, help='Frequency of how often to change the value in Hertz')
-    parser.add_argument('--value-change', type=float, default=None, help='numeric value(s) change rate ({value} * 1-{value_rate}) <= {value} <=  {value} * 1+{value_rate}')
-    parser.add_argument('--update-base', type=bool, nargs='?', const=True, default=False, help='when using `--value-change`, update base value')
-    parser.add_argument('--enable-auth', type=bool, nargs='?', const=True, default=False, help='Enable authentication')
-    parser.add_argument('--advanced-opcua', type=bool, nargs='?', const=True, default=False, help='Multiple data types, as opposed to only float values')
+    parser.add_argument('--change-rate', type=float, default=1, help='Frequency in Hz to change values')
+    parser.add_argument('--value-change', type=float, default=None, help='Change rate percentage (e.g. 5 for ±5%)')
+    parser.add_argument('--update-base', type=bool, nargs='?', const=True, default=False, help='Update base value on each change')
+    parser.add_argument('--enable-auth', type=bool, nargs='?', const=True, default=False, help='Enable OPC-UA authentication')
+    parser.add_argument('--advanced-opcua', type=bool, nargs='?', const=True, default=False, help='Use advanced data types')
+    parser.add_argument('--num-workers', type=int, default=4, help='Number of parallel update processes')
+
     args = parser.parse_args()
 
-    args.change_rate =  round(float(1/abs(args.change_rate)),5) if args.change_rate > 0 else 1.0
+    args.change_rate = round(1 / abs(args.change_rate), 5) if args.change_rate > 0 else 1.0
     if args.value_change is not None:
-        args.value_change = abs(args.value_change/100) if args.value_change > 1 else abs(args.value_change)
+        args.value_change = abs(args.value_change / 100) if args.value_change > 1 else abs(args.value_change)
 
-    opcua_server = OPCUAServer(endpoint=args.opcua_conn, is_advanced=args.advanced_opcua)
-    opcua_server.run(enable_auth=args.enable_auth, string_mode=args.string_mode, change_rate=abs(args.change_rate), value_change=args.value_change, update_base=args.update_base)
+    server = OPCUAServer(endpoint=args.opcua_conn, is_advanced=args.advanced_opcua)
+    server.run_multiprocess(
+        num_workers=args.num_workers,
+        enable_auth=args.enable_auth,
+        string_mode=args.string_mode,
+        change_rate=args.change_rate,
+        value_change=args.value_change,
+        update_base=args.update_base
+    )
