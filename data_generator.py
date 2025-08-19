@@ -140,8 +140,8 @@ def worker(metadata: str, iteration: int):
 
 
 def main():
-    total_iterations = 3
-    for iteration in range(total_iterations):
+    iteration = 0
+    while True:
         print(f"=== Iteration {iteration} ===")
         with ThreadPoolExecutor(max_workers=len(METADATAS)) as executor:
             futures = [executor.submit(worker, metadata, iteration) for metadata in METADATAS]
@@ -150,6 +150,7 @@ def main():
                     future.result()
                 except Exception as e:
                     print(f"Error in worker: {e}")
+        iteration += 1
 
 
 if __name__ == '__main__':
