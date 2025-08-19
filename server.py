@@ -6,7 +6,7 @@ from opcua import Server, ua
 from opcua.server.user_manager import UserManager
 from opcua.tools import parse_args
 import multiprocessing
-
+from read_json import grep_json_data, get_data
 
 from server_working import OPCUAServer
 
@@ -27,14 +27,6 @@ IDX_OBJECTS = [
 ]
 
 # Static NodeIds for Variables (leaf tags)
-""" 
-int 27
-float 13
-double 10
-char 26
-bool 27
-"""
-
 IDX_VARIABLES = {
    "D1001VFDStop": {'alter_datatype': ua.VariantType.Float, 'idx': 0, 'min': 0.0, 'max': 1.0, 'base_value': round(random.uniform(10, 100), 2)},
    "D1001VFDStopSpeedSetpoint": {'alter_datatype': ua.VariantType.Double, 'idx': 1, 'min': 0.0, 'max': 50.0, 'base_value': round(random.uniform(10, 100), 2)},
@@ -346,14 +338,15 @@ class OPCUAServer:
         self.server.start()
         print(f"Server is running at {self.endpoint}")
 
-    def get_random_value(self, vtype, min_val, max_val, base_value=None):
-        return {
-            ua.VariantType.Int32: int(random.uniform(min_val, max_val)),
-            ua.VariantType.Double: round(random.uniform(min_val, max_val), 2),
-            ua.VariantType.Float: random.uniform(min_val, max_val),
-            ua.VariantType.Boolean: bool(random.getrandbits(1)),
-            ua.VariantType.String: ''.join(random.choices(string.ascii_letters + string.digits, k=10))
-        }.get(vtype, base_value)
+    def get_random_value(self, idx:int):
+        return get_data(dir_name=f't{idx}')
+        # return {
+        #     ua.VariantType.Int32: int(random.uniform(min_val, max_val)),
+        #     ua.VariantType.Double: round(random.uniform(min_val, max_val), 2),
+        #     ua.VariantType.Float: random.uniform(min_val, max_val),
+        #     ua.VariantType.Boolean: bool(random.getrandbits(1)),
+        #     ua.VariantType.String: ''.join(random.choices(string.ascii_letters + string.digits, k=10))
+        # }.get(vtype, base_value)
 
     def update_variable_values(self, tag_group_var_dicts, change_rate, value_change, update_base):
         last_update_time = time.time()
@@ -374,7 +367,7 @@ class OPCUAServer:
                             var.set_value(base_value)
                         else:
                             # Random fluctuation around base value
-                            new_val = base_value + random.uniform(-value_change, value_change) if base_value else self.get_random_value(vtype, min_val, max_val)
+                            new_val = base_value + random.uniform(-value_change, value_change) if base_value else self.get_random_value(idx=IDX_VARIABLES.get(tag)['idx'])
                             # Clamp if numeric
                             if isinstance(new_val, (float, int)):
                                 new_val = max(min_val, min(new_val, max_val))
