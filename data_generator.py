@@ -2,6 +2,7 @@ import datetime
 import os
 import pandas as pd
 import json
+import time
 import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -22,20 +23,20 @@ METADATAS = {
         "discharge_pressure_2_kpa": 25
     },
     "thermocouples": {
-        "file": os.path.join('base_examples', 'hpu_mud_system_thermocouple_data.v6.csv'),
-        'TC1001': 31,
-        'TC1002': 32,
-        'TC1003': 33,
-        'TC1004': 34,
-        'TC1005': 35,
-        'TC1006': 36,
-        'TC1007': 37,
-        'TC1008': 38,
-        'TC1009': 39,
-        'TC1010': 40,
-        'TC1011': 41,
-        'TC1012': 42
-    }
+    "file": os.path.join('base_examples', 'hpu_mud_system_thermocouple_data.v6.csv'),
+    'TC1001': 28,
+    'TC1002': 29,
+    'TC1003': 30,
+    'TC1004': 31,
+    'TC1005': 32,
+    'TC1006': 33,
+    'TC1007': 34,
+    'TC1008': 35,
+    'TC1009': 36,
+    'TC1010': 37,
+    'TC1011': 38,
+    'TC1012': 39
+}
 }
 
 
@@ -48,10 +49,17 @@ def post_data(conn: str, payload: list):
         "Content-Type": "application/json"
     }
 
+    # for node in payload:
+    #     if node['table'] == 't46':
+    #         print(f'{node["dbms"]}.{node["table"]} - {node["timestamp"]} | {node["value"]}')
+
     try:
         response = requests.post(url=f"http://{conn}", headers=headers, data=json.dumps(payload), timeout=60)
         response.raise_for_status()
     except Exception as error:
+        print(conn)
+        print(payload)
+        print(headers)
         raise Exception(f"POST failed: {error}")
 
 
@@ -61,22 +69,29 @@ def update_timestamp(file_content: list):
 
     # Parse all original timestamps into datetime objects
     original_ts = [
-        datetime.datetime.strptime(row['timestamp'], '%Y-%m-%dT%H:%M:%S.%fZ')
+        datetime.datetime.strptime(row['timestamp'], '%Y-%m-%dT%H:%M:%S.%fZ').replace(tzinfo=datetime.timezone.utc)
         for row in file_content
     ]
 
     # Start new series 1 minute after the last timestamp
-    base_start_ts = original_ts[-1] + datetime.timedelta(minutes=1)
+    min_ts = min(original_ts)
+    max_ts = max(original_ts)
 
-    # Rebuild timestamps using original increments
-    new_ts = [base_start_ts]
-    for i in range(1, len(original_ts)):
-        diff = original_ts[i] - original_ts[i - 1]
-        new_ts.append(new_ts[-1] + diff)
+    max_curr_timestamp = datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(seconds=(max_ts - min_ts).total_seconds())
 
-    # Assign back into file_content
-    for i in range(len(file_content)):
-        file_content[i]['timestamp'] = new_ts[i].strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+    for i in range(len(original_ts)):
+        new_ts = max_curr_timestamp - datetime.timedelta(seconds=(max_ts - original_ts[i]).total_seconds())
+        file_content[i]['timestamp'] = new_ts.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+
+    # # Rebuild timestamps using original increments
+    # new_ts = [base_start_ts]
+    # for i in range(1, len(original_ts)):
+    #     diff = original_ts[i] - original_ts[i - 1]
+    #     new_ts.append(new_ts[-1] + diff)
+    #
+    # # Assign back into file_content
+    # for i in range(len(file_content)):
+    #
 
     return file_content
 
@@ -127,14 +142,14 @@ def publish_data(metadata: str, file_content: list):
                     payload['table'] = f't{METADATAS[metadata][column] + 1}'
                     payloads.append(payload)
         if payloads:
-            post_data(conn='10.0.0.39:32249', payload=payloads)
+            post_data(conn='10.0.0.220:32149', payload=payloads)
 
 
 def worker(metadata: str, iteration: int):
     print(f"[Thread] {metadata} iteration {iteration}")
     file_content = csv2json(file_path=METADATAS[metadata]['file'])
-    if iteration > 0:
-        file_content = update_timestamp(file_content)
+    # if iteration > 0:
+    file_content = update_timestamp(file_content)
     # print(file_content[0]['timestamp'])
     publish_data(metadata=metadata, file_content=file_content)
 
@@ -151,6 +166,7 @@ def main():
                 except Exception as e:
                     print(f"Error in worker: {e}")
         iteration += 1
+        time.sleep(30)
 
 
 if __name__ == '__main__':
