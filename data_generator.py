@@ -1,3 +1,4 @@
+import argparse
 import datetime
 import os
 import pandas as pd
@@ -41,6 +42,28 @@ METADATAS = {
 
 
 # Function to POST data
+def publish_msg_client(conn:str):
+    command = '''
+    run msg client where broker=rest and user-agent=anylog and log=false and topic=(
+        name=nov and
+        dbms="bring [dbms]" and
+        table="bring [table]" and
+        column.timestamp=(type=timestamp and value="bring [timestamp]") and
+        column.value=(type=float and value="bring [value]" and optional=false)
+    )>
+    '''.replace('\n',' ').replace('\t', ' ')
+    headers = {
+        'command': command,
+        'User-Agent': 'AnyLog/1.23'
+    }
+
+    try:
+        response = requests.post(url=f'http://{conn}', headers=headers)
+        response.raise_for_status()
+    except Exception as error:
+        raise Exception(f"Failed to execute `run msg client` (Error: {error})")
+
+
 def post_data(conn: str, payload: list):
     headers = {
         "command": "data",
@@ -95,6 +118,7 @@ def update_timestamp(file_content: list):
 
     return file_content
 
+
 def csv2json(file_path: str):
     if os.path.isfile(file_path):
         df = pd.read_csv(file_path)
@@ -125,7 +149,7 @@ def update_timestamp_orig(file_content: list):
     return file_content
 
 
-def publish_data(metadata: str, file_content: list):
+def publish_data(conn:str, db_name:str, metadata: str, file_content: list):
     for row in file_content:
         payloads = []
         for column, value in row.items():
@@ -138,28 +162,37 @@ def publish_data(metadata: str, file_content: list):
                     'value': value
                 }
                 if column in METADATAS[metadata]:
-                    payload['dbms'] = 'nov'
+                    payload['dbms'] = db_name
                     payload['table'] = f't{METADATAS[metadata][column] + 1}'
                     payloads.append(payload)
         if payloads:
-            post_data(conn='10.0.0.220:32149', payload=payloads)
+            post_data(conn=conn, payload=payloads)
 
 
-def worker(metadata: str, iteration: int):
+def worker(conn:str, db_name:str, metadata:str, iteration:int):
     print(f"[Thread] {metadata} iteration {iteration}")
     file_content = csv2json(file_path=METADATAS[metadata]['file'])
     # if iteration > 0:
     file_content = update_timestamp(file_content)
     # print(file_content[0]['timestamp'])
-    publish_data(metadata=metadata, file_content=file_content)
+    publish_data(conn=conn, db_name=db_name, metadata=metadata, file_content=file_content)
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('conn', type=str, default=None, help='REST connection to send data against')
+    parser.add_argument('--db-name', type=str, default="opcua_demo", help='logical database to store data in')
+    parser.add_argument('--create-msg-client', type=bool, nargs='?', const=True, default=False, help='run `get msg client` via REST')
+    args = parser.parse_args()
+
+    if args.create_msg_client is True:
+        publish_msg_client(conn=args.conn)
+
     iteration = 0
     while True:
         print(f"=== Iteration {iteration} ===")
         with ThreadPoolExecutor(max_workers=len(METADATAS)) as executor:
-            futures = [executor.submit(worker, metadata, iteration) for metadata in METADATAS]
+            futures = [executor.submit(worker, conn=args.conn, db_name=args.db_name, metadata, iteration) for metadata in METADATAS]
             for future in as_completed(futures):
                 try:
                     future.result()
